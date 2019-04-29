@@ -1,0 +1,336 @@
+<template>
+  <div class="map">
+    <div id="container"></div>
+    <div class="meizf">
+      <div class="moban">
+        <img class="gth" src="@/assets/gth.png" alt srcset>
+        <div class="textInfo">
+          <div class="v-text">您当前存在未支付订单</div>
+          <div class="v-text">请先进行支付</div>
+        </div>
+        <div class="pay">马上支付</div>
+      </div>
+    </div>
+    <div class="maker">
+      <div class="address">
+        <input type="text" placeholder="请输入当前位置" value="软件园三期A区">
+        <input type="text" placeholder="请输入目的地"  @click="navgateTo('address')">
+      </div>
+      <div class="price">
+        <div class="money">
+          约
+          <span>30.00</span>元
+          <img class="jt" src="@/assets/jt.png" alt="" srcset="">
+        </div>
+        <div class="yhz">优惠券已抵扣5.00元</div>
+      </div>
+      <div class="btn-pd">
+        <v-button @actionClick="navgateTo('wait')">确认下单</v-button>
+      </div>
+    </div>
+    <div class="lving">
+      <div class="user">
+          <div class="head">
+            <img class="yh left" src="@/assets/yh.png" alt="" srcset="">
+            <div class="left mobile">
+              15060755555
+            </div>
+          </div>
+          <div class="menu">
+            <div class="menu_list">
+              <div class="rowma">
+              <img class="or" src="@/assets/zd.png" alt="" srcset="">
+              订单
+            </div>
+            </div>
+             <div class="menu_list">
+              <div class="rowma">
+              <img class="or" src="@/assets/zh.png" alt="" srcset="">
+              账户
+            </div>
+            </div>
+             <div class="menu_list">
+              <div class="rowma">
+              <img class="or" src="@/assets/fx.png" alt="" srcset="">
+              客服
+            </div>
+            </div>
+             <div class="menu_list">
+              <div class="rowma">
+              <img class="or" src="@/assets/ewq.png" alt="" srcset="">
+              分享
+            </div>
+            </div>
+             <div class="menu_list">
+              <div class="rowma">
+              <img class="or" src="@/assets/zd.png" alt="" srcset="">
+              设置
+            </div>
+            </div>
+          </div>
+          <div class="jf">计费规则<span><img class="jt" src="@/assets/jt.png" alt="" srcset=""></span></div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import Button from "@/components/Button";
+export default {
+  components: {
+    "v-button": Button
+  },
+  mounted() {
+    this.getMap();
+  },
+  methods: {
+   
+    navgateTo(url){
+      this.$router.push(url);
+    },
+    getMap() {
+      var that = this;
+      var map = new AMap.Map("container", {
+        resizeEnable: true
+      });
+      map.plugin("AMap.Geolocation", function() {
+        var geolocation = new AMap.Geolocation({
+          enableHighAccuracy: true, //是否使用高精度定位，默认:true
+          timeout: 10000, //超过10秒后停止定位，默认：无穷大
+          maximumAge: 0, //定位结果缓存0毫秒，默认：0
+          convert: true, //自动偏移坐标，偏移后的坐标为高德坐标，默认：true      //显示定位按钮，默认：true   //定位按钮停靠位置，默认：'LB'，左下角
+          buttonOffset: new AMap.Pixel(10, 20), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+          showMarker: true, //定位成功后在定位到的位置显示点标记，默认：true      //定位成功后用圆圈表示定位精度范围，默认：true
+          panToLocation: true, //定位成功后将定位到的位置作为地图中心点，默认：true
+          zoomToAccuracy: true
+        });
+        map.addControl(geolocation);
+        geolocation.getCurrentPosition();
+        AMap.event.addListener(geolocation, "complete", onComplete); //返回定位信息
+        AMap.event.addListener(geolocation, "error", onError); //返回定位出错信息
+        function onComplete(data) {
+          console.log(data);
+          map.add(that.getMarker(data.position.lat, data.position.lng));
+        }
+
+        function onError(data) {
+          console.log(data);
+        }
+      });
+      console.log(map.getCenter());
+      //解析定位错误信息
+    },
+    getMarker(lat, lng) {
+      var marker = new AMap.Marker({
+        icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_bs.png",
+        offset: new AMap.Pixel(-10, -10),
+        position: new AMap.LngLat(lng, lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+        title: "我的位置"
+      });
+      return marker;
+    }
+  }
+};
+</script>
+<style scoped="">
+.jt{
+  width: .186667rem;
+  height: .333333rem;
+  float: right;
+}
+
+.jf{
+  position: absolute;
+  bottom: 0.5rem;
+  width: 4rem;
+  margin-right: 0.1rem;
+  text-align: center;
+}
+
+.menu{
+  clear: both;
+}
+.or{
+
+  width: .373333rem;
+  height: .373333rem;
+}
+
+.menu_list{
+  height: 1rem;
+  line-height: 1rem;
+}
+
+.menu_list img{
+  position: relative;
+  top: 0.07rem;
+}
+
+.rowma{
+  width: 90%;
+  margin: 0 auto;
+}
+
+.yh{
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: .233333rem;
+}
+
+.mobile{
+  font-size:.4rem;
+font-family:PingFang-SC-Heavy;
+font-weight:800;
+color:rgba(51,51,51,1);
+margin-top: .496667rem;
+}
+
+.lving{
+  display: none;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+z-index: 9999999;
+}
+
+.user{
+  width: 5rem;
+  background-color: white;
+  height: 100%;
+}
+
+.gth {
+  width: 0.906667rem;
+  height: 0.906667rem;
+  margin-top: 0.366667rem;
+}
+.meizf {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, -50%);
+  z-index: 999999;
+}
+
+.jt{
+  width: .213333rem;
+  height: .373333rem;
+  position: relative;
+  top: 0.01rem;
+  left: 0.2rem;
+}
+
+.textInfo {
+  width: 100%;
+  height: 1.853333rem;
+  border-bottom: 1px solid rgba(221, 221, 221, 0.4);
+}
+
+.v-text {
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Bold;
+  font-weight: bold;
+  margin-top: 0.203333rem;
+  color: rgba(51, 51, 51, 1);
+}
+
+.price {
+  text-align: center;
+  width: 9.04rem;
+  height: 1.666667rem;
+  background-color: white;
+}
+
+.money {
+  border-top: 1px solid rgba(221, 221, 221, 0.6);
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 1);
+  width: 8rem;
+  margin: 0 auto;
+  padding-top: .233333rem;
+}
+
+.money span {
+  font-weight: bold;
+  font-size: .5rem;
+}
+
+.yhz {
+  
+  width: 8rem;
+  margin: 0 auto;
+  font-size: 0.32rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 1);
+}
+
+.pay {
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(72, 203, 183, 1);
+  padding-top: 0.266667rem;
+}
+
+.moban {
+  width: 6.68rem;
+  height: 4.56rem;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 0.133333rem;
+  margin: 0 auto;
+  margin-top: 3rem;
+  text-align: center;
+}
+
+#container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.maker {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  z-index: 99;
+}
+
+.address {
+  width: 9.04rem;
+  height: 2.266667rem;
+  background: rgba(251, 251, 251, 1);
+  box-shadow: 0px 0.08rem 0.2rem 1px rgba(185, 185, 185, 0.3);
+  border-radius: 0.133333rem;
+  margin: 0 auto;
+  padding-top: 0.033333rem;
+}
+
+.address input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 1);
+  width: 8rem;
+  display: block;
+  margin: 0 auto;
+  margin-top: 0.406667rem;
+}
+
+.btn-pd {
+  margin-top: 0.533333rem;
+  margin-bottom: 1.33333rem;
+}
+</style>
+

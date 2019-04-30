@@ -7,201 +7,227 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path:'/',
+      path: '/',
       name: 'index',
-      component: resolve=>require(['@/pages/Home/index'],resolve),
-      meta:{
-        title:'首页'
+      component: resolve => require(['@/pages/Home/index'], resolve),
+      meta: {
+        title: '首页'
       }
     },
     {
-      path:'/address',
+      path: '/address',
       name: 'address',
-      component: resolve=>require(['@/pages/Home/address'],resolve),
-      meta:{
-        title:'选择地点'
+      component: resolve => require(['@/pages/Home/address'], resolve),
+      meta: {
+        title: '选择地点'
       }
     },
     {
-      path:'/login',
+      path: '/login',
       name: 'login',
-      component: resolve=>require(['@/pages/Account/login'],resolve),
-      meta:{
-        title:'登录'
+      component: resolve => require(['@/pages/Account/login'], resolve),
+      meta: {
+        title: '登录'
       }
     },
     {
-      path:'/forgetPassword',
+      path: '/forgetPassword',
       name: 'forgetPassword',
-      component: resolve=>require(['@/pages/Account/forgetPassword'],resolve),
-      meta:{
-        title:'忘记密码'
+      component: resolve => require(['@/pages/Account/forgetPassword'], resolve),
+      meta: {
+        title: '忘记密码'
       }
     },
     {
-      path:'/register',
+      path: '/register',
       name: 'register',
-      component: resolve=>require(['@/pages/Account/register'],resolve),
-      meta:{
-        title:"注册"
+      component: resolve => require(['@/pages/Account/register'], resolve),
+      meta: {
+        title: "注册"
       }
     },
     {
-      path:'/discuss',
+      path: '/discuss',
       name: 'discuss',
-      component: resolve=>require(['@/pages/Account/discuss'],resolve),
-      meta:{
-        title:"注册"
+      component: resolve => require(['@/pages/Account/discuss'], resolve),
+      meta: {
+        title: "注册"
       }
-      
+
     },
     {
-      path:'/city',
+      path: '/city',
       name: 'city',
-      component: resolve=>require(['@/pages/Home/city'],resolve),
-      meta:{
-        title:"选择城市"
+      component: resolve => require(['@/pages/Home/city'], resolve),
+      meta: {
+        title: "选择城市"
       }
     },
     {
-      path:'/surePage',
+      path: '/surePage',
       name: 'surePage',
-      component: resolve=>require(['@/pages/Home/surePage'],resolve),
-      meta:{
-        title:"确认下单"
+      component: resolve => require(['@/pages/Home/surePage'], resolve),
+      meta: {
+        title: "确认下单"
       }
     },
     {
-      path:'/freePage',
+      path: '/freePage',
       name: 'freePage',
-      component: resolve=>require(['@/pages/Home/freePage'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/Home/freePage'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/wait',
+      path: '/wait',
       name: 'wait',
-      component: resolve=>require(['@/pages/Home/wait'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/Home/wait'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/cancel',
+      path: '/cancel',
       name: 'cancel',
-      component: resolve=>require(['@/pages/Home/cancel'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/Home/cancel'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/success',
+      path: '/success',
       name: 'success',
-      component: resolve=>require(['@/pages/order/success'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/order/success'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/pail',
+      path: '/pail',
       name: 'pail',
-      component: resolve=>require(['@/pages/order/pail'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/order/pail'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/cancelSuccess',
+      path: '/cancelSuccess',
       name: 'cancelSuccess',
-      component: resolve=>require(['@/pages/order/cancelSuccess'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/order/cancelSuccess'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/reason',
+      path: '/reason',
       name: 'reason',
-      component: resolve=>require(['@/pages/order/reason'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/order/reason'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/cancelSure',
+      path: '/cancelSure',
       name: 'cancelSure',
-      component: resolve=>require(['@/pages/Home/cancelSure'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/Home/cancelSure'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/underway',
+      path: '/underway',
       name: 'underway',
-      component: resolve=>require(['@/pages/Home/underway'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/Home/underway'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/underwayAddress',
+      path: '/underwayAddress',
       name: 'underwayAddress',
-      component: resolve=>require(['@/pages/Home/underwayAddress'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/Home/underwayAddress'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/order',
+      path: '/order',
       name: 'order',
-      component: resolve=>require(['@/pages/order/order'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/order/order'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/discount',
+      path: '/discount',
       name: 'discount',
-      component: resolve=>require(['@/pages/order/discount'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/order/discount'], resolve),
+      meta: {
+        title: "张代驾"
       }
     },
     {
-      path:'/unLine',
+      path: '/unLine',
       name: 'unLine',
-      component: resolve=>require(['@/pages/order/unLine'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/order/unLine'], resolve),
+      meta: {
+        title: "张代驾"
       },
     },
     {
-      path:'/center',
+      path: '/center',
       name: 'center',
-      component: resolve=>require(['@/pages/report/center'],resolve),
-      meta:{
-        title:"张代驾"
+      component: resolve => require(['@/pages/report/center'], resolve),
+      meta: {
+        title: "张代驾"
       }
-      
+
+    },
+    {
+      path: '/systemReport',
+      name: 'systemReport',
+      component: resolve => require(['@/pages/report/systemReport'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+
+    },
+    {
+      path: '/notCompleted',
+      name: 'notCompleted',
+      component: resolve => require(['@/pages/order/notCompleted'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+
+    },
+    {
+      path: '/orderDetails',
+      name: 'orderDetails',
+      component: resolve => require(['@/pages/order/orderDetails'], resolve),
+      meta: {
+        title: "张代驾"
+      },
+    },
+    {
+      path: '/costBreakdown',
+      name: 'costBreakdown',
+      component: resolve => require(['@/pages/copper/costBreakdown'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+
   },
   {
-    path:'/systemReport',
-    name: 'systemReport',
-    component: resolve=>require(['@/pages/report/systemReport'],resolve),
-    meta:{
-      title:"张代驾"
+    path: '/myAccount',
+    name: 'myAccount',
+    component: resolve => require(['@/pages/copper/myAccount'], resolve),
+    meta: {
+      title: "张代驾"
     }
-    
-},
-{
-  path:'/notCompleted',
-  name: 'notCompleted',
-  component: resolve=>require(['@/pages/order/notCompleted'],resolve),
-  meta:{
-    title:"张代驾"
-  }
-  
+
 }
-    
+  
   ]
 })

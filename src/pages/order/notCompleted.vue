@@ -12,23 +12,103 @@
       </div>
       <div class="list">
         <div class="row">
-          <span class="left wen">优惠券</span>
+          <span class="left wen"><img class="dz" src="@/assets/dz.png" />优惠券</span>
           <span class="right mun">
             17张
             <img class="jt" src="@/assets/jt.png" alt srcset>
           </span>
         </div>
       </div>
+      <div class="list">
+        <div class="row">
+          <span class="left wen"><img class="dz" src="@/assets/dz.png" />代驾目的地</span>
+           </div>
+      </div>
+      <div class="mar"></div>
     </div>
+    <div class="title">
+      <div class="row">已完成订单</div>
+    </div>
+    
+     <div class="list">
+        <div class="row">
+          <span class="left time">02月28日 14:07</span>
+          <span class="right ing">已完成</span>
+        </div>
+        
+      </div>
+      <div class="list">
+        <div class="row">
+          <span class="left wen"><img class="dz" src="@/assets/dz.png" />优惠券</span>
+          <span class="right mun">
+         
+            <img class="jt" src="@/assets/jt.png" alt srcset>
+          </span>
+        </div>
+      </div>
+       <div class="list">
+        <div class="row">
+          <span class="left wen"><img class="dz" src="@/assets/dz.png" />优惠券</span>
+          <span class="right mun">
+           
+          </span>
+        </div>
+      </div>
+      <div class="border"></div>
+      
+     <div class="list">
+        <div class="row">
+          <span class="left time">02月28日 14:07</span>
+          <span class="right ing">已取消</span>
+        </div>
+        
+      </div>
+      <div class="list">
+        <div class="row">
+          <span class="left wen"><img class="dz" src="@/assets/dz.png" />优惠券</span>
+          <span class="right mun">
+            
+            <img class="jt" src="@/assets/jt.png" alt srcset>
+          </span>
+        </div>
+      </div>
+       <div class="list">
+        <div class="row">
+          <span class="left wen"><img class="dz" src="@/assets/dz.png" />优惠券</span>
+          <span class="right mun">
+          
+           
+          </span>
+        </div>
+      </div>
+       <div class="border"></div>
   </div>
 </template>
 <script>
 export default {};
 </script>
 <style scoped="">
+.dz{
+  width:.266667rem;
+height:.346667rem;
+margin-right: .133333rem;
+position: relative;
+top: 0.04rem;
+}
+.mar{
+  width: 100%;
+  height:.24rem;
+background:rgba(221,221,221,1);
+opacity:0.4;
+}
 .jt {
   width: 0.16rem;
   height: 0.306667rem;
+}
+
+.border{
+  height: 1px;
+  background: #dddddd;
 }
 
 .wen {

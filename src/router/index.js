@@ -218,16 +218,105 @@ export default new Router({
         title: "张代驾"
       }
 
-  },
-  {
-    path: '/myAccount',
-    name: 'myAccount',
-    component: resolve => require(['@/pages/copper/myAccount'], resolve),
-    meta: {
-      title: "张代驾"
-    }
+    },
+    {
+      path: '/myAccount',
+      name: 'myAccount',
+      component: resolve => require(['@/pages/copper/myAccount'], resolve),
+      meta: {
+        title: "张代驾"
+      }
 
-}
-  
+    },
+    {
+      path: '/accountBalance',
+      name: 'accountBalance',
+      component: resolve => require(['@/pages/copper/accountBalance'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+
+    },
+    {
+      path: '/invest',
+      name: 'invest',
+      component: resolve => require(['@/pages/copper/invest'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/advance',
+      name: 'advance',
+      component: resolve => require(['@/pages/copper/advance'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/bindCard',
+      name: 'bindCard',
+      component: resolve => require(['@/pages/copper/bindCard'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/myDiscount',
+      name: 'myDiscount',
+      component: resolve => require(['@/pages/copper/myDiscount'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/serverCenter',
+      name: 'serverCenter',
+      component: resolve => require(['@/pages/server/serverCenter'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/recentOrders',
+      name: 'recentOrders',
+      component: resolve => require(['@/pages/server/recentOrders'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/appeal',
+      name: 'appeal',
+      component: resolve => require(['@/pages/server/appeal'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/messageCenter',
+      name: 'messageCenter',
+      component: resolve => require(['@/pages/server/messageCenter'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/processing',
+      name: 'processing',
+      component: resolve => require(['@/pages/server/processing'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/problem',
+      name: 'problem',
+      component: resolve => require(['@/pages/server/problem'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    }
+    
   ]
 })

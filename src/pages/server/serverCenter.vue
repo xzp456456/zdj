@@ -1,0 +1,265 @@
+<template>
+  <div class="server">
+    <div class="order">
+      <div class="row">
+        <span class="left on">最近订单</span>
+        <span class="right all">
+          全部
+          <img class="jt" src="@/assets/jt.png" alt srcset>
+        </span>
+      </div>
+    </div>
+    <div>
+      <div class="row time">2月26日 18:30</div>
+    </div>
+    <div class="mode">
+      <div class="row list">
+        <img class="dz" src="@/assets/dz.png" alt srcset>
+        <span>代驾出发地</span>
+      </div>
+      <div class="row list">
+        <img class="dz" src="@/assets/dz.png" alt srcset>
+        <span>代驾出发地</span>
+      </div>
+      <div class="ab">
+        <button>我要投诉</button>
+      </div>
+    </div>
+    <div class="pd"></div>
+    <div class="order">
+      <div class="row">
+        <span class="left on">投诉反馈</span>
+      </div>
+    </div>
+    <div class="order" style="border:none">
+      <div class="row">
+        <span class="left on">
+          <img class="sl" src="@/assets/sl.png" alt srcset> 投诉进度
+        </span>
+        <span class="right all">
+          1条投诉进度
+          <img class="jt" src="@/assets/jt.png" alt srcset>
+        </span>
+      </div>
+    </div>
+    <div class="pd"></div>
+    <div class="order">
+      <div class="row">
+        <span class="left on">常见问题</span>
+      </div>
+    </div>
+    <div class="iger">
+      <div class="main">
+        <div class="row">
+          <div class="left user">
+            <img class="yh" src="@/assets/yh.png" alt srcset>
+            <div class="account">账号使用</div>
+            <img class="xia" src="@/assets/xiajiantou.png" alt srcset>
+          </div>
+          <div class="left">
+            <div class="rh">如何取消订单</div>
+            <div class="ck">查看订单记录</div>
+          </div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="row">
+          <div class="left user">
+            <img class="yh" src="@/assets/yh.png" alt srcset>
+            <div class="account">账号使用</div>
+            <img class="xia" src="@/assets/xiajiantou.png" alt srcset>
+          </div>
+          <div class="left">
+            <div class="rh">如何取消订单</div>
+            <div class="ck">查看订单记录</div>
+          </div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="row">
+          <div class="left user">
+            <img class="yh" src="@/assets/yh.png" alt srcset>
+            <div class="account">账号使用</div>
+            <img class="xia" src="@/assets/xiajiantou.png" alt srcset>
+          </div>
+          <div class="left">
+            <div class="rh">如何取消订单</div>
+            <div class="ck">查看订单记录</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row we">
+      <button class="phone left">电话客服</button>
+      <button class="line right">在线客服</button>
+    </div>
+  </div>
+</template>
+<script>
+export default {};
+</script>
+<style scoped="">
+.we {
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+}
+.phone {
+  width: 4.266667rem;
+  height: 0.88rem;
+  background: #48cbb7;
+  border-radius: 0.133333rem;
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  outline: none;
+  border: none;
+}
+.line {
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  width: 4.266667rem;
+  outline: none;
+  border: none;
+  height: 0.88rem;
+  background: #48cbb7;
+  border-radius: 0.133333rem;
+}
+
+.yh {
+  width: 0.72rem;
+  height: 0.72rem;
+}
+.dz {
+  width: 0.266667rem;
+  height: 0.346667rem;
+}
+
+.main {
+  border-bottom: 1px solid #dddddd;
+  height: 2.4rem;
+}
+
+.user {
+  margin-top: 0.4rem;
+  width: 2rem;
+  text-align: center;
+  font-size: 0.373333rem;
+  height: 1.653333rem;
+  border-right: 1px solid #dddddd;
+}
+
+.ck {
+  width: 6.5rem;
+  height: 1rem;
+  line-height: 1rem;
+  padding-left: 0.5rem;
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 1);
+}
+
+.rh {
+  width: 6.5rem;
+  padding-left: 0.5rem;
+  height: 1.2rem;
+  line-height: 1.2rem;
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 1);
+  border-bottom: 1px solid #dddddd;
+}
+
+.account {
+  margin: 0.2rem 0;
+}
+
+.user img {
+  display: block;
+  margin: 0 auto;
+}
+
+.xia {
+  width: 0.333333rem;
+  height: 0.186667rem;
+}
+
+.sl {
+  width: 0.293333rem;
+  height: 0.373333rem;
+}
+
+.mode {
+  position: relative;
+}
+.jt {
+  width: 0.16rem;
+  height: 0.306667rem;
+  margin-left: 0.3rem;
+}
+
+.list {
+  height: 1rem;
+  line-height: 1rem;
+}
+
+.ab {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.5rem;
+}
+
+.pd {
+  width: 100%;
+  height: 0.24rem;
+  background: rgba(221, 221, 221, 1);
+  opacity: 0.4;
+}
+
+.ab button {
+  width: 1.733333rem;
+  height: 0.773333rem;
+  background: rgba(72, 203, 183, 1);
+  border-radius: 0.133333rem;
+  font-size: 0.32rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  border: none;
+  outline: none;
+}
+
+.time {
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Bold;
+  font-weight: bold;
+  color: rgba(51, 51, 51, 1);
+  height: 1.333333rem;
+  line-height: 1.333333rem;
+}
+
+.all {
+  color: #999999;
+  font-size: 0.32rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+}
+
+.on {
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 1);
+}
+
+.order {
+  border-bottom: 1px solid #dddddd;
+  width: 100%;
+  height: 1.333333rem;
+  line-height: 1.333333rem;
+}
+</style>

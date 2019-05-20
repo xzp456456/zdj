@@ -3,11 +3,11 @@
     <div class="row mag">
       <img class="moren left" src="@/assets/moren.png" alt srcset>
       <div class="left mlf">
-        <span class="name">胡师傅</span>
+        <span class="name">{{item.realname}}</span>
         <span class="pj">
-          <img class="xinxing" src="@/assets/xinxing.png" alt srcset>5.0
+          <img class="xinxing" src="@/assets/xinxing.png" alt srcset>{{item.driver_star}}
         </span>
-        <div class="lin">代驾1104次 驾龄5年</div>
+        <div class="lin">代驾{{item.drive_times}}次 驾龄{{item.driver_years}}</div>
       </div>
     </div>
     <div class="bar">
@@ -18,25 +18,25 @@
     <div class="item">
       <div class="vlist">
         <div class="row">
-          <span class="left colb">02月27日 14:07</span>
-          <span class="right colb">已完成</span>
+          <span class="left colb">{{info.create_time}}</span>
+          <span class="right colb">{{info.status_desc}}</span>
         </div>
       </div>
       <div class="vlist">
         <div class="row">
           <span class="left">
-            <img class="dz" src="@/assets/dz.png">代驾目的地
+            <img class="dz" src="@/assets/dz.png">代驾出发地:{{info.origin_name}}
           </span>
-          <span class="right">20.3元</span>
+          <!-- <span class="right">20.3元</span> -->
         </div>
       </div>
       <div class="vlist">
         <div class="row">
           <span class="left">
-            <img class="dz" src="@/assets/dz.png">代驾目的地
+            <img class="dz" src="@/assets/dz.png">代驾目的地:{{info.destination_name}}
           </span>
           <span class="right">
-            20.3元
+            {{current_price}}元
             <img class="gth" src="@/assets/gth.png" alt srcset>
           </span>
         </div>
@@ -61,8 +61,39 @@
 <script>
 import Button from "@/components/Button";
 export default {
+  data(){
+    return{
+      info:{},
+      current_price:'',
+      item:{}
+    }
+  },
+  created(){
+    this.getInfo();
+    this.current_price = localStorage.getItem('current_price');
+  },
   components: {
     "v-button": Button
+  },
+  methods:{
+    getInfo(){
+      let data = {trip_id:localStorage.getItem('trip_id_info')}
+      this.$postAjax('/api/trip/tripInfo',data)
+      .then(res=>{
+        //console.log(res);
+        this.info = res.data;
+        this.uid = res.data.uid;
+        this.getUserInfo();
+      })
+    },
+    getUserInfo(){
+      let data = {obj_uid:this.uid}
+      this.$postAjax('/api/user/getUserInfo',data)
+      .then(res=>{
+        ////console.log(res);
+        this.item = res.data;
+      })
+    }
   }
 };
 </script>
@@ -358,8 +389,8 @@ export default {
 
 .vlist {
   clear: both;
-  height: 1rem;
-  line-height: 1rem;
+   height: 1rem;
+  /* line-height: 1rem; */
   font-size: 0.373333rem;
   font-family: PingFang-SC-Medium;
   font-weight: 500;

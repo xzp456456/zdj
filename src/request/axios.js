@@ -56,9 +56,9 @@ axios.interceptors.request.use(
     //     spinnerType: 'fading-circle'
     //   }),
     config => {
-        if (store.state.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
-            config.headers.Authorization = `token ${store.state.token}`;
-        }
+        // if (store.state.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
+        //     config.headers.Authorization = `token ${store.state.token}`;
+        // }
         return config;
     },
     err => {
@@ -80,7 +80,7 @@ axios.interceptors.response.use(
                     break;
             }
         }
-        return Promise.reject(error.response.data)   // 返回接口返回的错误信息
+        return Promise.reject(error)   // 返回接口返回的错误信息
     }
 );
 
@@ -105,22 +105,28 @@ export const getAjax = (url, param) => {
 }
 
 export const postAjax = (url, param) => {
-    param['device-os']='wap';
+    
     var sort = objKeySort(param);
     var map = getKey(sort);
     var check = mapParam(map);
-    var end = 'yxsoft'+check+'yxsoft'
-    var md5end = md5(end);
-    var signature = cryptoJS.AES.encrypt(md5end,'lPwIYiE*ZO^V%1%x',{
+    var cheParam = 'yxsoft'+check+'device-oswap'+'yxsoft'
+   // //console.log(cheParam)
+    var md5param = md5(cheParam);
+    ////console.log(md5param)
+    var key = cryptoJS.SHA256('lPwIYiE*ZO^V%1%x').toString();
+   // //console.log(key)
+    var sign = cryptoJS.AES.encrypt(md5param,key,{
         iv:'00000000000000000000000000000000'
     })
-    console.log(signature)
+   var signature = sign.ciphertext.toString();
+ // //console.log(signature)
     return new Promise((resolve, reject) => {
         axios.post(url, qs.stringify(param),{
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'device-os':'wap',
-                'access-token':localStorage.getItem('token')
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+                 'device-os':'wap',
+                 'access-token':localStorage.getItem('access_token'),
+                'signature':'123456'
             }
         }).then((res) => {
            
@@ -132,11 +138,12 @@ export const postAjax = (url, param) => {
 }
 
 export const postFileUp = (url, param) => {
-   
     return new Promise((resolve, reject) => {
         axios.post(url,param, {
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                'access-token':localStorage.getItem('access_token'),
+                'signature':'123456'
             }
         }).then((res) => {
             resolve(res.data);

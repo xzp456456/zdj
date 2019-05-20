@@ -1,51 +1,88 @@
 <template>
   <div>
     <div class="navBar">
-      <div class="left nav active">系统消息</div>
-      <div class="right nav">对话</div>
+      <div class="left nav" :class="infoId==0?'active':''"  @click=" change(0)">系统消息</div>
+      <div class="right nav" :class="infoId==1?'active':''" @click="change(1)">对话</div>
     </div>
-    <div class="item">
+    <div v-show="infoId==0">
+    <div class="item" v-for="(item,index) in list" :key="index">
       <div class="row">
-        <div class="list">
-          <span class="left title">【福利】XXXXXXXXXXXXXX!</span>
-          <span class="right time">9-21 14:00</span>
+        <div class="list" >
+          <span class="left title">{{item.title}}</span>
+          <span class="right time">{{item.on_time}}</span>
         </div>
         <div class="desc">
-          这是一条消息XXXXXXXXXXXXXXXX
-          XXXXXXXXXXXXXXXXXXXXX
+          {{item.content}}
         </div>
       </div>
     </div>
-    <div class="item">
+</div>
+<div v-show="infoId==1">
+  <div class="item" v-for="(item,index) in userList" :key="index" >
       <div class="row">
-        <div class="list">
-          <span class="left title">【福利】XXXXXXXXXXXXXX!</span>
-          <span class="right time">9-21 14:00</span>
+        <div class="list" >
+          <div class="left pd"><img class="header left" src="@/assets/header.png" alt="" srcset="">
+          <div class="left">
+          <div class="title">{{item.targetId}}</div>
+          <div class="desc">
+          
         </div>
-        <div class="desc">
-          这是一条消息XXXXXXXXXXXXXXXX
-          XXXXXXXXXXXXXXXXXXXXX
         </div>
+          </div>
+      
+          <div class="right time">{{item.on_time}}</div>
+        
+        </div>
+        
       </div>
     </div>
-    <div class="item">
-      <div class="row">
-        <div class="list">
-          <span class="left title">【福利】XXXXXXXXXXXXXX!</span>
-          <span class="right time">9-21 14:00</span>
-        </div>
-        <div class="desc">
-          这是一条消息XXXXXXXXXXXXXXXX
-          XXXXXXXXXXXXXXXXXXXXX
-        </div>
-      </div>
-    </div>
+</div>
   </div>
 </template>
 <script>
-export default {};
+import { RyMI } from '@/util/public'
+export default {
+  data(){
+    return{
+      infoId:0,
+        page:0,
+        page_size:10,
+        list:[],
+        userList:{}
+    }
+  },
+  created(){
+    this.getReport();
+    this.getUserList();
+  },
+  methods:{
+    change(id){
+      this.infoId = id;
+    },
+      getReport(){
+        let data = {page:this.page,page_size:this.page_size}
+        this.$postAjax('/api/msg/getList',data)
+        .then(res=>{
+          //console.log(res)
+            this.list = res.data.list
+        })
+      },
+      getUserList(){
+        RyMI().then(res=>{
+          this.userList = res;
+        })
+      }
+  }
+};
 </script>
 <style scoped="">
+
+.header{
+  width: 1.266667rem;
+  height: 1.266667rem;
+  display: inline-block;
+  margin-right: .266667rem;
+}
 .navBar {
   width: 100%;
   height: 1.333333rem;
@@ -94,11 +131,11 @@ export default {};
 }
 
 .desc {
-  width: 5.613333rem;
-  height: 0.733333rem;
+  /* width: 5.613333rem; */
   font-size: 0.346667rem;
   font-family: PingFang-SC-Medium;
   font-weight: 500;
   color: rgba(51, 51, 51, 1);
+  clear: both;
 }
 </style>

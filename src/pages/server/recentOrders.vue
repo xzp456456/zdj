@@ -64,7 +64,11 @@
 </template>
 <script>
 export default {
-    
+    methods:{
+        getMyComplain(){
+            
+        }
+    }
 }
 </script>
 <style scoped="">

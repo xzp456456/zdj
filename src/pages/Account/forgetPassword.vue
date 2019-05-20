@@ -4,20 +4,24 @@
     <div class="desc row">密码8—16位，需包含数字、字母、符号中至少2中元素</div>
     <div class="form">
       <div class="mobile input">
-        <input type="text" maxlength="11"
-          onkeyup="this.value=this.value.replace(/[^\d]/g,'')" placeholder="请输入手机号">
+        <input type="text" maxlength="11" v-model="info.mobile"
+          onkeyup="this.value=this.value.replace(/[^\d]/g,'')"   placeholder="请输入手机号">
       </div>
       <div class="code input">
-        <input type="text" maxlength="6" placeholder="请输入验证码">
-        <button :disabled="disabled" class="getcode right" @click="getCode()">{{codeText}}</button>
+        <input type="text" maxlength="6" placeholder="请输入验证码"  v-model="info.code" >
+        <button :disabled="disabled"  class="getcode right" @click="getCode()">{{codeText}}</button>
       </div>
       <div class="password input">
-        <input :type="type" placeholder="请输入新密码">
+        <input :type="type" placeholder="请输入新密码"  v-model="info.password">
         <img class="eye" @click="showPwd()" src="@/assets/eye.png" alt>
+      </div>
+      <div class="password input">
+        <input :type="type_again" placeholder="再次输入密码"  v-model="info.password_again">
+        <img class="eye" @click="showPwdAgain()" src="@/assets/eye.png" alt>
       </div>
     </div>
   <div class="btn-pd">
-    <v-button>确认</v-button>
+    <v-button @actionClick="changePassword()">确认</v-button>
     </div>
   </div>
 </template>
@@ -29,10 +33,34 @@ export default {
     return {
       codeText: "获取验证码",
       disabled: false,
-      type: "password"
+      type: "password",
+      type_again: "password",
+      info:{}
     };
   },
   methods: {
+    changePassword(){
+      let data = this.info;
+      this.$postAjax('/api/user/forgetLoginPassword',data)
+      .then(res=>{
+        if(res.status){
+           if (res.status) {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          });
+          setTimeout(()=>{
+            this.$router.push('/login');
+          },1000)
+        } else {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          })
+        }
+        }
+      })
+    },
     showPwd() {
       if (this.type == "password") {
         this.type = "text";
@@ -40,8 +68,29 @@ export default {
         this.type = "password";
       }
     },
+    showPwdAgain() {
+      if (this.type_again == "password") {
+        this.type_again = "text";
+      } else {
+        this.type_again = "password";
+      }
+    },
     getCode() {
-      this.getTime(60);
+      let data = { type: "find_password_mobile", account: this.info.mobile };
+      this.$postAjax("/api/code/sendCode", data).then(res => {
+        if (res.status) {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          });
+          this.getTime(60);
+        } else {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          })
+        }
+      });
     },
     getTime(time) {
       var timeFun = setInterval(() => {

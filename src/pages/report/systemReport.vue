@@ -8,12 +8,11 @@
     <div class="title">【福利】XXXXXXXXXXXXXX!</div>
     <div class="time">2019-09-21 14:00</div>
     <div class="item">
-      <div class="list">
+      <div class="list" v-for="(item,index) in list" :key="index">
         <div class="row">
-          <div class="name">这是一条消息</div>
+          <div class="name">{{item.title}}</div>
           <div class="desc">
-            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-            XXXXXXXXXXXXXXXXXXXXX
+            {{item.content}}
           </div>
         </div>
       </div>
@@ -40,7 +39,28 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data(){
+    return{
+        page:0,
+        page_size:10,
+        list:[]
+    }
+  },
+  created(){
+    this.getReport()
+  },
+  methods:{
+      getReport(){
+        let data = {page:this.page,page_size:this.page_size}
+        this.$postAjax('/api/msg/getList',data)
+        .then(res=>{
+          //console.log(res)
+            this.list = res.data.list
+        })
+      }
+  }
+};
 </script>
 <style scoped="">
 .navgate {

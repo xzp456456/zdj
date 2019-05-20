@@ -14,7 +14,7 @@
         </div>
         
         <div class="btn">
-          <v-button myclass="bgcolor" @actionClick="next()">继续取消</v-button>
+          <v-button myclass="bgcolor" @actionClick="cancel()">继续取消</v-button>
         </div>
       </div>
     </div>
@@ -31,6 +31,14 @@ export default {
     methods:{
         next(){
             this.conunter=1;
+        },
+        cancel(){
+          let data = {trip_id:localStorage.getItem('trip_id'),confirm_cancel:1}
+          this.$postAjax('/api/trip/cancelTrip',data)
+          .then(res=>{
+            //console.log(res);
+            this.next()
+          })
         }
     },
   components: {

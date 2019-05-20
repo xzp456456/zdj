@@ -3,13 +3,13 @@
     <div class="top">
       <div class="list">
         <span class="left">
-          <i>姓名</i>：张三
+          <i>姓名</i>：{{info.realname}}
         </span>
         <span class="right change">修改</span>
       </div>
       <div class="list">
         <span class="left">
-          <i>银行名称</i>：招商银行
+          <i>银行名称</i>：{{info.bank_name+info.bank_open}}
         </span>
       </div>
       <div class="list">
@@ -28,7 +28,7 @@
     <div class="border"></div>
     <div class="keyi">
       <div class="row">
-        <span class="left moneykey">可提现金额100.00元</span>
+        <span class="left moneykey">可提现金额{{info.balance}}元</span>
         <span class="right all">全部提现</span>
       </div>
     </div>
@@ -43,13 +43,31 @@
       <div class="li">2、7天内只能提现一次；</div>
       <div class="li">3、最低提现金额为1元；</div>
     </div> -->
-    <v-alert></v-alert>
+    <v-alert v-show="showId==1"></v-alert>
   </div>
 </template>
 <script>
 import Button from "@/components/Button";
 import Alert from "@/components/Alert";
 export default {
+  data(){
+    return{
+      showId:0,
+      info:{}
+    }
+  },
+  created(){
+    this.getUserInfo()
+  },
+  methods:{
+     getUserInfo(){
+      this.$postAjax('/api/user/getUserInfo',{})
+      .then(res=>{
+        //console.log(res)
+        this.info = res.data;
+      })
+    }
+  },
   components: {
     "v-button": Button,
     "v-alert":Alert

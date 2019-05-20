@@ -1,14 +1,35 @@
 <template>
   <div>
-    <div class="title">如何取消订单</div>
-    <div class="desc row">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-      Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
+    <div class="list" v-for="(item,index) in info" :key="index">
+      <div class="title">{{item.cate_name}}</div>
+      <div class="desc row">
+      <div v-for="(li,i) in item.faq" :key="i">
+      <div >{{li.title}}</div>
+      <div>{{li.answer}}</div>
+      </div>
     </div>
+  </div>
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      info: {}
+    };
+  },
+  created() {
+    this.getProblem();
+  },
+  methods: {
+    getProblem() {
+      this.$postAjax("/api/faq/getList", {}).then(res => {
+        //console.log(res)
+        this.info = res.data;
+      });
+    }
+  }
+};
 </script>
 <style scoped="">
 .title {

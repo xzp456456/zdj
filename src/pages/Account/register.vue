@@ -1,22 +1,38 @@
 <template>
-    <div class>
-    <div class="forget row">忘记密码</div>
+  <div class>
+    <div class="forget row">注册</div>
     <div class="form">
       <div class="mobile input">
-        <img class="mode" src="@/assets/phone.png"  alt="" /><input maxlength="11" onkeyup="this.value=this.value.replace(/[^\d]/g,'')" placeholder="请输入手机号">
+        <img class="mode" src="@/assets/phone.png" alt>
+        <input
+          maxlength="11"
+          v-model="info.mobile"
+          onkeyup="this.value=this.value.replace(/[^\d]/g,'')"
+          placeholder="请输入手机号"
+        >
       </div>
       <div class="code input">
-        <img class="mode" src="@/assets/code.png" alt="" /><input type="text" maxlength="6" placeholder="请输入验证码">
-        <button :disabled="disabled" class="getcode right"  @click="getCode()">{{codeText}}</button>
+        <img class="mode" src="@/assets/code.png" alt>
+        <input v-model="info.code" type="text" maxlength="6" placeholder="请输入验证码">
+        <button :disabled="disabled" class="getcode right" @click="getCode()">{{codeText}}</button>
       </div>
       <div class="password input">
-        <img class="mode" src="@/assets/suo.png" alt=""  /><input :type="type" placeholder="8-16位，由字母、数字和字符2种元素组成">
+        <img class="mode" src="@/assets/suo.png" alt>
+        <input :type="type" v-model="info.password" placeholder="8-16位，由字母、数字和字符2种元素组成">
         <img class="eye" @click="showPwd()" src="@/assets/eye.png" alt>
       </div>
+      <div class="password input">
+        <img class="mode" src="@/assets/suo.png" alt>
+        <input :type="type_again" v-model="info.password_again" placeholder="再次输入密码">
+        <img class="eye" @click="showPwdAgain()" src="@/assets/eye.png" alt>
+      </div>
     </div>
-    <div class="row login"><span @click="navgateTo('login')">已有账号，立即登录</span></div>
-    <div class="btn-pd"><v-button>确认</v-button></div> 
-    
+    <div class="row login">
+      <span @click="navgateTo('login')">已有账号，立即登录</span>
+    </div>
+    <div class="btn-pd">
+      <v-button @actionClick="register()">确认</v-button>
+    </div>
   </div>
 </template>
 
@@ -27,13 +43,15 @@ export default {
     return {
       codeText: "获取验证码",
       disabled: false,
-      type: "password"
+      type: "password",
+      type_again: "password",
+      info: {}
     };
   },
   methods: {
-      navgateTo(url){
-          this.$router.push(url)
-      },
+    navgateTo(url) {
+      this.$router.push(url);
+    },
     showPwd() {
       if (this.type == "password") {
         this.type = "text";
@@ -41,8 +59,29 @@ export default {
         this.type = "password";
       }
     },
+    showPwdAgain() {
+      if (this.type_again == "password") {
+        this.type_again = "text";
+      } else {
+        this.type_again = "password";
+      }
+    },
     getCode() {
-      this.getTime(60);
+      let data = { type: "register_mobile", account: this.info.mobile };
+      this.$postAjax("/api/code/sendCode", data).then(res => {
+        if (res.status) {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          });
+          this.getTime(60);
+        } else {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          })
+        }
+      });
     },
     getTime(time) {
       var timeFun = setInterval(() => {
@@ -55,6 +94,25 @@ export default {
           this.disabled = false;
         }
       }, 1000);
+    },
+    register() {
+      let data = this.info;
+      this.$postAjax("/api/user/register", data).then(res => {
+        if (res.status) {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          });
+        setTimeout(()=>{
+          this.$router.push('login');
+        },1000)
+        } else {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          });
+        }
+      });
     }
   },
 
@@ -118,25 +176,25 @@ export default {
   top: 0.1rem;
 }
 
-.mode{
-    width: .266667rem;
-    height: .346667rem;
-    margin-right: .266667rem;
-    margin-top: 0.1rem;
-    position: relative;
-    top: 0.05rem;
+.mode {
+  width: 0.266667rem;
+  height: 0.346667rem;
+  margin-right: 0.266667rem;
+  margin-top: 0.1rem;
+  position: relative;
+  top: 0.05rem;
 }
 
-.login{
-    font-size:.32rem;
-    text-align: right;
-font-family:PingFang-SC-Medium;
-font-weight:500;
-color:rgba(72,203,183,1);
-margin-top: 0.4rem;
+.login {
+  font-size: 0.32rem;
+  text-align: right;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(72, 203, 183, 1);
+  margin-top: 0.4rem;
 }
 
-.btn-pd{
+.btn-pd {
   margin: 0.813333rem 0;
 }
 </style>

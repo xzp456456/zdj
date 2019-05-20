@@ -10,10 +10,10 @@
     <div class="bottom">
       <div class="or">已等待 00 : 04</div>
       <div class="wait">正在为您寻找司机，请耐心等待</div>
-      <v-button myclass="wid"  v-if="wait==0">取消代驾</v-button>
+      <v-button myclass="wid"  v-if="wait==0" @actionClick="cancel()">取消代驾</v-button>
      <div class="form" v-if="wait==1">
-         <button class="quxiao left">取消代驾</button>
-         <button class="sure right">同意加价</button>
+         <button class="quxiao left" @click="select(0)">继续等待</button>
+         <button class="sure right" >同意加价</button>
      </div>
     </div>
   </div>
@@ -33,6 +33,18 @@ export default {
     this.getMap();
   },
   methods: {
+    select(wait){
+        this.wait =wait;
+    },
+    cancel(){
+      let data = {
+        trip_id:localStorage.getItem('trip_id')
+      }
+      this.$postAjax('/api/trip/cancelTrip',data)
+      .then(res=>{
+        //console.log(res);
+      })
+    },
     navgateTo(url) {
       this.$router.push(url);
     },
@@ -57,15 +69,15 @@ export default {
         AMap.event.addListener(geolocation, "complete", onComplete); //返回定位信息
         AMap.event.addListener(geolocation, "error", onError); //返回定位出错信息
         function onComplete(data) {
-          console.log(data);
+          //console.log(data);
           map.add(that.getMarker(data.position.lat, data.position.lng));
         }
 
         function onError(data) {
-          console.log(data);
+          //console.log(data);
         }
       });
-      console.log(map.getCenter());
+      //console.log(map.getCenter());
       //解析定位错误信息
     },
     getMarker(lat, lng) {

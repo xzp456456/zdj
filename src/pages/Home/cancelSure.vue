@@ -1,6 +1,6 @@
 <template>
   <div class="map">
-    <div id="container"></div>
+    <!-- <div id="container"></div> -->
 
     <div class="bottom">
       <div class="row mag">
@@ -26,18 +26,29 @@ import Button from "@/components/Button";
 export default {
   data() {
     return {
-      wait: 0
+      wait: 0,
+      reason:{}
     };
   },
   components: {
     "v-button": Button
   },
+  created(){
+    this.getReason();
+  },
   mounted() {
-    this.getMap();
+    //this.getMap();
   },
   methods: {
     navgateTo(url) {
       this.$router.push(url);
+    },
+    getReason(){
+      this.$postAjax('/api/trip/getTripCancelReason',{type:2})
+      .then(res=>{
+        //console.log(res.data);
+        this.reason = res.data;
+      })
     },
     getMap() {
       var that = this;
@@ -60,15 +71,15 @@ export default {
         AMap.event.addListener(geolocation, "complete", onComplete); //返回定位信息
         AMap.event.addListener(geolocation, "error", onError); //返回定位出错信息
         function onComplete(data) {
-          console.log(data);
+          //console.log(data);
           map.add(that.getMarker(data.position.lat, data.position.lng));
         }
 
         function onError(data) {
-          console.log(data);
+          //console.log(data);
         }
       });
-      console.log(map.getCenter());
+      //console.log(map.getCenter());
       //解析定位错误信息
     },
     getMarker(lat, lng) {

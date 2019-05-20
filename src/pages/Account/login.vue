@@ -21,16 +21,17 @@
           type="text"
           name
           id
+          v-model="info.mobile"
         >
       </div>
       <div class="border" v-if="change==0">
         <img class="pwd" src="@/assets/password.png" alt>
-        <input placeholder="请输入登录密码" :type="type">
+        <input placeholder="请输入登录密码"  v-model="info.password" :type="type">
         <img class="eye" src="@/assets/eye.png" @click="showPwd()" alt>
       </div>
       <div class="border" v-if="change==1">
         <img class="pwd" src="@/assets/yzm.png" alt>
-        <input class="code" maxlength="6" placeholder="请输入验证码">
+        <input class="code" v-model="info.code" maxlength="6" placeholder="请输入验证码">
         <button :disabled="disabled" @click="getCode()" class="getcode right">{{codeText}}</button>
       </div>
     </div>
@@ -39,7 +40,7 @@
       <div class="right" @click="navgateTo('register')">快速注册</div>
     </div>
     <div class="read">
-      <button class="login">登录</button>
+      <button class="login" @click="login()">登录</button>
     </div>
     <div class="line" @click="navgateTo('discuss')">登录表示您已阅读并同意《用户协议》</div>
   </div>
@@ -50,7 +51,9 @@ export default {
     return {
       type: "password",
       change: 0,
-      codeText: "获取验证码"
+      codeText: "获取验证码",
+      info:{},
+      disabled:false
     };
   },
   methods: {
@@ -67,8 +70,56 @@ export default {
     changeLogin(num) {
       this.change = num;
     },
+    login(){
+      if(this.change==1){
+        let data = this.info;
+        this.loginbyMobile('/api/user/loginByMobile',data)
+      }else{
+        let data ={account:this.info.mobile,password:this.info.password};
+        this.loginbyMobile('/api/user/loginByAccount',data)
+      }
+      
+    },
+    loginbyMobile(url,data){
+      this.$postAjax(url,data)
+      .then(res=>{
+        if (res.status) {
+           localStorage.setItem('access_token',res.data.access_token);
+          localStorage.setItem('uid',res.data.uid);
+          localStorage.setItem('im_token',res.data.im_token);
+          localStorage.setItem('mobile',this.info.mobile);
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          });
+          setTimeout(()=>{
+            this.$router.push('/');
+          },1000)
+        } else {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          })
+        }
+      })
+    },
     getCode() {
-      this.getTime(60);
+      let data = { type: "login_mobile", account: this.info.mobile };
+      this.$postAjax("/api/code/sendCode", data).then(res => {
+        if (res.status) {
+         
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          });
+          this.getTime(60);
+        } else {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          })
+        }
+      });
     },
     getTime(time) {
       var timeFun = setInterval(() => {

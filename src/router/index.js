@@ -316,6 +316,110 @@ export default new Router({
       meta: {
         title: "张代驾"
       }
+    },
+    {
+      path:'/share',
+      name: 'share',
+      component: resolve => require(['@/pages/server/share'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/setup',
+      name: 'setup',
+      component: resolve => require(['@/pages/Home/setup'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/accountSecurity',
+      name: 'accountSecurity',
+      component: resolve => require(['@/pages/server/accountSecurity'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/changePhone',
+      name: 'changePhone',
+      component: resolve => require(['@/pages/Account/changePhone'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/newPhone',
+      name: 'newPhone',
+      component: resolve => require(['@/pages/Account/newPhone'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/changePassword',
+      name: 'changePassword',
+      component: resolve => require(['@/pages/Account/changePassword'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/findPassword',
+      name: 'findPassword',
+      component: resolve => require(['@/pages/Account/findPassword'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/wx',
+      name: 'wx',
+      component: resolve => require(['@/pages/Account/wx'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/cancelAccount',
+      name: 'cancelAccount',
+      component: resolve => require(['@/pages/Account/cancelAccount'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/rule',
+      name: 'rule',
+      component: resolve => require(['@/pages/Account/rule'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/serverUser',
+      name:'serverUser',
+      component: resolve => require(['@/pages/server/serverUser'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/demo',
+      name:'demo',
+      component: resolve => require(['@/pages/server/demo'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/evaluate',
+      name:'evaluate',
+      component: resolve => require(['@/pages/order/evaluate'], resolve),
+      meta: {
+        title: "张代驾"
+      }
     }
     
   ]

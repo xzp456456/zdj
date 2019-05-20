@@ -3,42 +3,44 @@
     <div class="top">
       <div class="row">
         账户余额：
-        <span>15.00</span>元
+        <span>{{info.balance}}</span>元
       </div>
     </div>
     <div class="item">
       <ul>
-        <li>￥100</li>
-        <li class="active">￥100</li>
-        <li>￥100</li>
-        <li>￥100</li>
-        <li>￥100</li>
-        <li>￥100</li>
+        <li :class="select_id==0?'active':''" @click="select(0,100)">￥100</li>
+        <li :class="select_id==1?'active':''" @click="select(1,200)">￥200</li>
+        <li :class="select_id==2?'active':''" @click="select(2,300)">￥300</li>
+        <li :class="select_id==3?'active':''" @click="select(3,500)">￥500</li>
+        <li :class="select_id==4?'active':''" @click="select(4,1000)">￥1000</li>
+        <li :class="select_id==5?'active':''" @click="select(5,3000)">￥2000</li>
       </ul>
     </div>
 
-    <input class="shuru" type="text" placeholder="请输入充值金额">
+    <input class="shuru" type="text" placeholder="请输入充值金额" v-model="amount">
     <div>
-      <v-button>立即充值</v-button>
+      <v-button @actionClick="showWx(1)">立即充值</v-button>
     </div>
-    <div class="lving">
+    <div class="lving" v-show="wxId==1">
       <div class="bottom">
         <div class="close">
           <div class="row">
-            <img src="@/assets/cuo.png" alt srcset> 充值支付金额
+            <img src="@/assets/cuo.png" @click="showWx(0)" alt srcset> 充值支付金额
           </div>
         </div>
         <div class="allmoney">
           <span class="left">充值金额</span>
-          <span class="right">200元</span>
+          <span class="right">{{amount}}元</span>
         </div>
         <div class="imgk row">
-          <img class="wx" src="@/assets/wx.png" alt srcset>
-          <span>微信支付</span>
+          <div class="left">
+          <img class="wx left" src="@/assets/wx.png" alt srcset>
+          <span class="left">微信支付</span>
+          </div>
           <img class="xuanze" src="@/assets/xuanze.png" alt="" >
         </div>
         <div class="mode">
-            <v-button>确认支付200元</v-button>
+            <v-button @actionClick="Money()">确认支付{{amount}}元</v-button>
         </div>
       </div>
     </div>
@@ -48,8 +50,55 @@
 <script>
 import Button from "@/components/Button";
 export default {
+  data(){
+    return{
+      amount:'100',
+      wxId:0,
+      select_id:0,
+      info:{}
+    }
+  },
   components: {
     "v-button": Button
+  },
+  created(){
+    this.getUserInfo()
+  },
+  methods:{
+    showWx(id){
+      if(this.amount==''){
+        this.Toast({
+          message: '金额不能为空',
+          duration: 1000
+        });
+        return false;
+      }
+      this.wxId=id;
+      
+    },
+    getUserInfo(){
+      this.$postAjax('/api/user/getUserInfo',{})
+      .then(res=>{
+        this.info = res.data;
+      })
+    },
+    Money(){
+      let data = {amount:this.amount}
+      this.$postAjax('/api/finance/recharge',data)
+      .then(res=>{
+        if(res.status==10000){
+          location.href = res.data.url;
+        }
+         this.Toast({
+          message: res.msg,
+          duration: 1000
+        });
+      })
+    },
+    select(id,money){
+      this.select_id = id;
+      this.amount = money;
+    }
   }
 };
 </script>
@@ -96,7 +145,9 @@ export default {
   border: 1px solid rgba(225, 225, 225, 1);
   border-radius: 0.106667rem 0.106667rem 0.106667rem 0.106667rem;
   display: inline-block;
-  padding: 0.163333rem 0.783333rem;
+  padding: 0.163333rem 0;
+  width: 2.733333rem;
+  text-align: center;
 }
 
 .close {

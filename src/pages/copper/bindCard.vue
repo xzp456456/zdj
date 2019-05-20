@@ -9,9 +9,15 @@
         <label for>银行卡号：</label>
         <input type="text" class="form" placeholder="请输入银行卡号">
       </div>
-      <div class="row mk">
+      <div class="row mk" id="singleLinePicker">
         <label for>银行名称：</label>
-        <input type="text" class="form" placeholder="请输入银行名称">
+        <input
+          type="text"
+          class="form"
+          placeholder="请输入银行名称"
+          :value="info.cardName"
+          @click="getPicker()"
+        >
       </div>
       <div class="row mk">
         <label for>预留号码：</label>
@@ -24,18 +30,56 @@
       </div>
     </div>
     <div class="btns">
-        <div class="btn">
-        <v-button>提交</v-button> 
-        </div>   
+      <div class="btn">
+        <v-button>提交</v-button>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import Button from '@/components/Button';
+import Button from "@/components/Button";
 export default {
-    components:{
-        'v-button':Button
+  data() {
+    return {
+      idCardName: [],
+      info: {}
+    };
+  },
+  created() {
+    this.getIdCardName();
+  },
+  methods: {
+    // {
+    //     label: '飞机票',
+    //     value: 0,
+    //     disabled: true // 不可用
+    // }
+    getIdCardName() {
+      this.$postAjax("/api/index/getBankList", {}).then(res => {
+        let item = res.data.list;
+        let card = item.map((item, index) => {
+          return { label: item, value: index };
+        });
+        this.idCardName = card;
+      });
+    },
+    getPicker() {
+      var that = this;
+      this.weui.picker(this.idCardName, {
+        className: "custom-classname",
+        container: "body",
+        onChange: result => {},
+        onConfirm: result => {
+          this.$set(that.info,'cardName',result[0].label)
+          
+        },
+        id: "singleLinePicker"
+      });
     }
+  },
+  components: {
+    "v-button": Button
+  }
 };
 </script>
 <style scoped="">
@@ -82,13 +126,13 @@ label {
   border: 1px solid rgba(221, 221, 221, 1);
   border-radius: 0.133333rem;
 }
-.btns{
-    position: absolute;
-    bottom: 0.6rem;
-     width: 100%;
+.btns {
+  position: absolute;
+  bottom: 0.6rem;
+  width: 100%;
 }
 
-.btn{
-   width: 100%;
+.btn {
+  width: 100%;
 }
 </style>

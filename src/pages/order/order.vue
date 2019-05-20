@@ -65,7 +65,7 @@
             <v-button>确认支付20.3元</v-button>    
         </div>
         </div>
-        <div class="prdem">
+        <div class="prdem" v-show="showId==1">
         <div class="successPay">
             <img class="success" src="@/assets/success.png" alt="">
             <div class="textk">支付成功！</div>
@@ -82,6 +82,11 @@
 <script>
 import Button from '@/components/Button';
 export default {
+    data(){
+        return{
+            showId:0
+        }
+    },
      components:{
         'v-button':Button
     }

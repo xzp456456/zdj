@@ -11,6 +11,9 @@ export default {
 </script>
 
 <style>
+.search-btn{
+  display: none !important;
+}
 .row{
   width: 9.2rem;
   margin: 0 auto;

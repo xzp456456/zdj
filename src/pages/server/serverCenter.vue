@@ -1,6 +1,6 @@
 <template>
   <div class="server">
-    <div class="order">
+    <div class="order" @click="navgateTo('recentOrders')">
       <div class="row">
         <span class="left on">最近订单</span>
         <span class="right all">
@@ -10,20 +10,22 @@
       </div>
     </div>
     <div>
-      <div class="row time">2月26日 18:30</div>
+    <div>
+      <div class="row time">{{list[0].create_time}}</div>
     </div>
     <div class="mode">
       <div class="row list">
         <img class="dz" src="@/assets/dz.png" alt srcset>
-        <span>代驾出发地</span>
+        <span>代驾出发地:{{list[0].origin_name}}</span>
       </div>
       <div class="row list">
         <img class="dz" src="@/assets/dz.png" alt srcset>
-        <span>代驾出发地</span>
+        <span>代驾出发地:{{list[0].destination_name}}</span>
       </div>
       <div class="ab">
-        <button>我要投诉</button>
+        <button @click="navgateTo('appeal')">我要投诉</button>
       </div>
+    </div>
     </div>
     <div class="pd"></div>
     <div class="order">
@@ -96,7 +98,31 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data(){
+    return{
+      list:[]
+    }
+  },
+  created(){
+    this.getOrder()
+  },
+  methods:{
+    navgateTo(url){
+      this.$router.push(url)
+    },
+    getOrder(){
+      let data = {
+        page:1,
+        page_size:10
+      }
+      this.$postAjax('/api/trip/getMyList',data)
+      .then(res=>{
+        this.list = res.data.list;
+      })
+    }
+  }
+};
 </script>
 <style scoped="">
 .we {
@@ -203,14 +229,17 @@ export default {};
 }
 
 .list {
-  height: 1rem;
-  line-height: 1rem;
+  width: 6.5rem;
+  display: block;
+  margin: 0;
+  margin-left: 0.4rem;
+  padding-bottom: 0.5rem;
 }
 
 .ab {
   position: absolute;
   right: 1rem;
-  bottom: 0.5rem;
+  bottom: 1.5rem;
 }
 
 .pd {

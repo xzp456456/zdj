@@ -5,14 +5,14 @@
         <span class="right"><img class="xuanze" src="@/assets/xuanze.png" alt="" srcset=""></span>
         </div>
         <div class="item">
-            <div class="list">
-                <div class="left money">￥1000</div>
+            <div class="list" v-for="(item,index) in list" :key="index">
+                <div class="left money">￥{{item.discount}}</div>
                 <div class="left all">
-                    <div class="name">新用户优惠券</div>
-                    <div class="time">2019-3-10到期</div>
+                    <div class="name">{{item.name}}</div>
+                    <div class="time">{{item.expire_time}}到期</div>
                 </div>
             </div>
-             <div class="list">
+             <!-- <div class="list">
                 <div class="left money">￥1000</div>
                 <div class="left all">
                     <div class="name">新用户优惠券</div>
@@ -25,13 +25,33 @@
                     <div class="name">新用户优惠券</div>
                     <div class="time">2019-3-10到期</div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>  
 </template>
 <script>
 export default {
-    
+    data(){
+        return{
+            type:'',
+            page:0,
+            page_size:10,
+            list:{}
+        }
+    },
+    created(){
+        this.getDiscount();
+    },
+    methods:{
+        getDiscount(){
+            let data = {type:this.type,page:this.page,page_size:this.page_size}
+            this.$postAjax('/api/coupon/getList',data)
+            .then(res=>{
+                //console.log(res);
+                this.list = res.data.list;
+            })
+        }
+    }
 }
 </script>
 <style scoped="">

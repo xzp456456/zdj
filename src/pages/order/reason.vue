@@ -4,14 +4,8 @@
       <div class="title row">请选择取消原因，我们将努力改善</div>
     </div>
     <div class="item">
-      <div class="list active">
-        <div class="row">临时有事，现在走不了</div>
-      </div>
-      <div class="list">
-        <div class="row">已有其他人代驾</div>
-      </div>
-      <div class="list">
-        <div class="row">我选错了出发地或目的地</div>
+      <div :class="index==activeIndex?'list active':'list'" v-for="(item,index) in reason" :key="index" @click="select(index,item.reason_id)">
+        <div class="row">{{item.reason}}</div>
       </div>
     </div>
     <div class="bottom">
@@ -27,6 +21,35 @@
 <script>
 import Button from "@/components/Button";
 export default {
+  data(){
+    return{
+      reason:[],
+      activeIndex:0,
+      reason_id:''
+    }
+  },
+  created(){
+    this.getReason();
+  },
+  methods:{
+    select(index,reason_id){
+      this.activeIndex = index;
+      this.reason_id = reason_id;
+    },
+    getReason(){
+      this.$postAjax('/api/trip/getTripCancelReason',{type:2})
+      .then(res=>{
+        //console.log(res.data);
+        this.reason = res.data;
+      })
+    },
+    formReason(trip_id,reason_id,reason_other){
+      this.$postAjax('/api/trip/tripCancelReasonSubmit',{trip_id,reason_id,reason_other})
+      .then(res=>{
+        //console.log(res);
+      })
+    }
+  },
   components: {
     "v-button": Button
   }

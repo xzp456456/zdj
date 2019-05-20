@@ -4,20 +4,19 @@
       <div class="mode">
         <img class="search left" src="@/assets/search.png" alt>
         <input type="text" class="left input" placeholder="中文/拼音/首字母">
-        <div class="quxiao left">取消</div>
+        <div class="quxiao left" @click="navgateTo('address')">取消</div>
       </div>
     </div>
     <div class="now">当前</div>
     <div class="item">
         <ul>
-            <li>北京</li>
+            <li>{{nowCity}}</li>
         </ul>
     </div>
     <div class="now">热门城市</div>
     <div class="all">
         <ul>
-            <li>北京</li>
-            <li>北京</li>
+            <li v-for="(item,index) in city" :key="index">{{item.province}}</li>
         </ul>
     </div>
     <div class="now">a</div>
@@ -35,7 +34,30 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data(){
+    return{
+      nowCity:'',
+      city:[]
+    }
+  },
+  created(){
+    this.nowCity = localStorage.getItem('city');
+    this.getCity();
+  },
+  methods:{
+    navgateTo(url){
+      this.$router.push(url)
+    },
+    getCity(){
+      this.$postAjax('/api/index/getAddress',{})
+      .then(res=>{
+        this.city = res.data.list;
+        //console.log(res);
+      })
+    }
+  }
+};
 </script>
 <style scoped="">
 .mode {

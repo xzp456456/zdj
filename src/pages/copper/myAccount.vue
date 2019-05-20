@@ -1,20 +1,20 @@
 <template>
   <div>
     <div class="item">
-      <div class="list">
+      <div class="list" @click="navgateTo('accountBalance')">
           <div class="row">
         <span class="left">账户余额</span>
         <span class="right money">
-          60.00元
+         {{info.balance}}元
           <img class="jt" src="@/assets/jt.png" alt srcset>
         </span>
         </div>
       </div>
-      <div class="list">
+      <div class="list" @click="navgateTo('discount')">
           <div class="row">
         <span class="left">优惠券</span>
         <span class="right money">
-          17张
+          {{info.coupon_num}}张
           <img class="jt" src="@/assets/jt.png" alt srcset>
         </span>
         </div>
@@ -23,7 +23,28 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data(){
+    return{
+      info:{}
+    }
+  },
+  created(){
+    this.getUserInfo()
+  },
+  methods:{
+    navgateTo(url){
+      this.$router.push(url);
+    },
+    getUserInfo(){
+      this.$postAjax('/api/user/getUserInfo',{})
+      .then(res=>{
+        //console.log(res);
+        this.info = res.data;
+      })
+    }
+  }
+};
 </script>
 <style scoped="">
 .list {

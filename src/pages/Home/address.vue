@@ -3,47 +3,86 @@
     <div class="search">
       <div class="row">
         <div class="left address" @click="navgateTo('city')">
-          厦门
+          {{city}}
           <img class="xz" src="@/assets/xz.png" alt srcset>
         </div>
         <div class="left border"></div>
         <div class="left searchInput">
-          <input type="text" placeholder="请输入代驾出发地" class="searchTap">
+         <input type="text" placeholder="请输入代驾出发地" v-model="keywords" @input="getAddress()"   class="searchTap">
+  
         </div>
-        <div class="left quxiao">取消</div>
+        <div class="left quxiao" @click="navgateTo('/')">取消</div>
       </div>
     </div>
     <div class="item">
-        <div class="list">
-            <div class="row">
-                <div class="name">西亭村</div>
-            <div class="area">厦门市集美区</div>
-            </div>
+      <div class="list" v-for="(item,index) in list" :key="index" @click="select(item.location,item.name)">
+        <div class="row">
+          <div class="name">{{item.adname}}</div>
+          <div class="area">{{item.name}}</div>
         </div>
-        <div class="list">
-            <div class="row">
-                <div class="name">西亭村</div>
-            <div class="area">厦门市集美区</div>
-            </div>
+      </div>
+      <!-- <div class="list">
+        <div class="row">
+          <div class="name">西亭村</div>
+          <div class="area">厦门市集美区</div>
         </div>
-        <div class="list">
-            <div class="row">
-                <div class="name">西亭村</div>
-            <div class="area">厦门市集美区</div>
-            </div>
+      </div>
+      <div class="list">
+        <div class="row">
+          <div class="name">西亭村</div>
+          <div class="area">厦门市集美区</div>
         </div>
+      </div> -->
     </div>
   </div>
 </template>
 <script>
 export default {
-    methods:{
-        navgateTo(url){
-            this.$router.push(url)
-        }
+  data(){
+    return{
+      city:'',
+      keywords:'',
+      list:[]
     }
-};
+  },
+  created(){
+    this.city = localStorage.getItem('city');
+  },
+  methods:{
+    navgateTo(url){
+      this.$router.push(url)
+    },
+    select(location,name){
+      if(localStorage.getItem('select_id')==1){
+        localStorage.setItem('location',location);
+        localStorage.setItem('origin_name',name);
+        localStorage.setItem('changeAddress',1);
+      }
+      if(localStorage.getItem('select_id')==0){
+        localStorage.setItem('en_location',location);
+         localStorage.setItem('destination_name',name)
+      }
+      this.navgateTo('/');
+    },
+    getAddress(){
+    let data = {
+      keywords:this.keywords,
+      city:this.city,
+      extensions:'all',
+      page:'1',
+      offset:10,
+      key:'5d36d977b287953b8e7037325b1085bf'
+    }
+    this.$getAjax('https://restapi.amap.com/v3/place/text',data)
+    .then(res=>{
+      //console.log(res)
+      this.list = res.pois;
+    })
+  }
+  }
+}
 </script>
+
 
 <style scoped="">
 .search {
@@ -57,8 +96,20 @@ export default {
   font-family: PingFang-SC-Medium;
   font-weight: 500;
   color: rgba(51, 51, 51, 1);
-  
 }
+
+
+
+.el-vue-search-box-container{
+      position: relative;
+    width: 6.16rem;
+    height: 1.5rem;
+    background:transparent;
+    box-shadow: none;
+    border-radius: 0;
+    z-index: 10;
+}
+
 
 .searchTap {
   border: none;
@@ -74,14 +125,13 @@ export default {
   height: 0.133333rem;
 }
 
-.border{
-    width:1px;
-height:.426667rem;
-background:rgba(221,221,221,1);
-margin-right:0.1rem;
-margin-left:0.4rem;
-margin-top: .506667rem;
-
+.border {
+  width: 1px;
+  height: 0.426667rem;
+  background: rgba(221, 221, 221, 1);
+  margin-right: 0.1rem;
+  margin-left: 0.4rem;
+  margin-top: 0.506667rem;
 }
 
 .quxiao {
@@ -91,26 +141,29 @@ margin-top: .506667rem;
   color: rgba(153, 153, 153, 1);
 }
 
-.name{
-    font-size:.373333rem;
-font-family:PingFang-SC-Medium;
-font-weight:500;
-color:rgba(51,51,51,1);
-padding-top: .393333rem;
-padding-bottom: 0.1rem;
+.name {
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 1);
+  padding-top: 0.393333rem;
+  padding-bottom: 0.1rem;
 }
 
-.area{
-    font-size:.32rem;
-font-family:PingFang-SC-Medium;
-font-weight:500;
-color:rgba(153,153,153,1);
+.area {
+  font-size: 0.32rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(153, 153, 153, 1);
 }
 
-.list{
-    width: 100%;
-    height: 1.88rem;
-    border-bottom: 1px solid #dddddd;
+.list {
+  width: 100%;
+  height: 1.88rem;
+  border-bottom: 1px solid #dddddd;
 }
+
+
+
 </style>
 

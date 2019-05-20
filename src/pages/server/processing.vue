@@ -2,13 +2,13 @@
     <div>
         <div class="title">
             <div class="row">
-                当前进度：处理中
+                当前进度：{{info.status}}
             </div>
 
         </div>
          <div class="title">
             <div class="row">
-                订单编号：0000001
+                订单编号：{{info.trip_id}}
             </div>
 
         </div>
@@ -21,35 +21,51 @@
             <div class="list">
                 <div class="row">
                 <img class="dz left" src="@/assets/dz.png" alt="" srcset="">
-                <span class="pd">代驾出发地</span>
+                <span class="pd">代驾出发地 :</span>
+                 <span class="nar">{{info.origin_name}}</span>
                </div>
             </div>
              <div class="list">
                 <div class="row">
                 <img class="dz left" src="@/assets/dz.png" alt="" srcset="">
-                <span class="pd">代驾目的地</span>
-            
+                <span class="pd">代驾目的地 :</span>
+                <span  class="nar">{{info.destination_name}}</span>
                </div>
             </div>
         </div>
         <div class="yuanying row">
             <div class="left let">投诉原因：</div>
-            <div class="left desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum
+            <div class="left desc">{{info.complain_reason}}
         </div>
         </div>
          <div class="yuanying row pd">
             <div class="left let">投诉凭证：</div>
             <div class="left img">
-                <img class="pz" src="@/assets/img.png" alt="">
-                <img class="pz" src="@/assets/img.png" alt="">
-                <img class="pz" src="@/assets/img.png" alt="">
+                <img class="pz" v-for="(item,index) in info.files" :key="index" :src="item" :onerror=" defaultImg" alt="">
             </div>
         </div>
     </div>
 </template>
 <script>
 export default {
-    
+    data(){
+        return{
+             defaultImg: 'this.src="' + require('@/assets/img.png') + '"',
+            info:{}
+        }
+    },
+    created(){
+        this.getComplain()
+    },
+    methods:{
+        getComplain(){
+            let data = { complain_id:1 }
+            this.$postAjax('/api/complain/complainDetail',data)
+            .then(res=>{
+                this.info = res.data;
+            })
+        }
+    }
 }
 </script>
 <style scoped="">
@@ -98,6 +114,10 @@ height:.346667rem;
     width: 7rem;
 }
 
+.nar{
+    line-height: normal;
+}
+
 .bottom{
     position: absolute;
     bottom: 0.5rem;
@@ -110,12 +130,13 @@ color:rgba(187,187,187,1);
 }
 
 .list{
-    height: 1rem;
-    line-height: 1rem;
+    /* height: 1rem; */
+    /* line-height: 1rem; */
     font-size:.373333rem;
 font-family:PingFang-SC-Medium;
 font-weight:500;
 color:rgba(51,51,51,1);
+margin-bottom: .4rem;
 }
 
 .pd{
@@ -124,7 +145,7 @@ color:rgba(51,51,51,1);
 
 .list img{
     position: relative;
-    top: 0.33rem;
+    top: 0.13rem;
 }
 
 .navBar{

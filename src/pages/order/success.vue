@@ -58,15 +58,15 @@ export default {
         AMap.event.addListener(geolocation, "complete", onComplete); //返回定位信息
         AMap.event.addListener(geolocation, "error", onError); //返回定位出错信息
         function onComplete(data) {
-          console.log(data);
+          //console.log(data);
           map.add(that.getMarker(data.position.lat, data.position.lng));
         }
 
         function onError(data) {
-          console.log(data);
+          //console.log(data);
         }
       });
-      console.log(map.getCenter());
+      //console.log(map.getCenter());
       //解析定位错误信息
     },
     getMarker(lat, lng) {

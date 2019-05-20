@@ -10,6 +10,7 @@
             <span class="right ing">进行中</span>
             </div>
         </div>
+        <div class="scroll">
         <div class="address">
             <div class="list">
                 <div class="row">
@@ -27,17 +28,77 @@
                </div>
             </div>
         </div>
+       
+        </div>
         <div class="bottom">
-            没有更多了~
+    <div class="weui-loadmore" v-show="load==1">
+    <i class="weui-loading"></i>
+    <span class="weui-loadmore__tips">正在加载</span>
+</div>
+<div class="weui-loadmore weui-loadmore_line" v-show="load==0">
+    <span class="weui-loadmore__tips">暂无数据</span>
+</div>
         </div>
     </div>
 </template>
 <script>
 export default {
-    
+    data(){
+        return{
+            load:2,
+            list:[],
+            page:0,
+            page_size:10,
+            total:''
+        }
+    },
+    created(){
+        this.getList();
+        this.getMore();
+    },
+    methods:{
+        getList(){
+            let data = { page:this.page,page_size:this.page_size }
+            this.$postAjax('/api/complain/myComplain',data)
+            .then(res=>{
+                //console.log(res);
+                this.total = res.data.total;
+                this.list = res.data.list;
+            })
+        },
+        getMore(){
+        window.onscroll = () =>{
+           		var scrollTop = document.documentElement.scrollTop||document.body.scrollTop;
+           		var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+           		var scrollHeight = document.documentElement.scrollHeight||document.body.scrollHeight;
+               if(scrollTop+windowHeight==scrollHeight){
+                //写后台加载数据的函数
+                        if(this.page_size>this.total){
+                                this.load =0;
+                                return false;
+                        }
+                        if(this.load == 1){
+                            return false;
+                        }
+                        this.load = 1;
+                       var Loader = setTimeout(()=>{
+                            this.page_size = this.page_size+10;
+                            this.getList();
+                            this.load = 2;
+                        },2000)
+              }   
+        }
+    }
+    }
+        
 }
 </script>
 <style scoped="">
+.scroll{
+    width: 100%;
+    height: 16rem;
+    overflow-y:scroll;
+}
 .jt{
     width:.186667rem;
 height:.346667rem;
@@ -48,8 +109,6 @@ height:.346667rem;
 }
 
 .bottom{
-    position: absolute;
-    bottom: 0.5rem;
   font-size:.32rem;
   width: 100%;
   text-align: center;

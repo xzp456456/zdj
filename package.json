@@ -15,7 +15,11 @@
     "js-md5": "^0.7.3",
     "mint-ui": "^2.2.13",
     "vue": "^2.5.2",
-    "vue-router": "^3.0.1"
+    "vue-amap": "^0.5.9",
+    "vue-router": "^3.0.1",
+    "vue-weui": "^0.3.2",
+    "weui": "^2.0.0",
+    "weui.js": "^1.1.4"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

@@ -2,10 +2,10 @@
   <div class="account">
     <div class="top">
       <div class="tm account">— 账户余额 (元) —</div>
-      <div class="money tm">0.00</div>
+      <div class="money tm">{{info.balance}}</div>
       <div class="tm balance">余额可用于支付车费</div>
       <div class="btn-item">
-        <button class="btn">充值</button>
+        <button class="btn" @click="navgateTo('invest')">充值</button>
       </div>
     </div>
     <div class="clear">
@@ -42,6 +42,27 @@
 <script>
 import Button from '@/components/Button'
 export default {
+  data(){
+    return{
+      info:{}
+    }
+  },
+  created(){
+    this.getUserInfo();
+  },
+  methods:{
+    getUserInfo(){
+      this.$postAjax('/api/user/getUserInfo',{})
+      .then(res=>{
+        //console.log(res)
+        this.info = res.data;
+      })
+    },
+    navgateTo(url){
+    this.$router.push(url)
+  }
+  },
+  
     components:{
         'v-button':Button
     }

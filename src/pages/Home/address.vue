@@ -53,14 +53,24 @@ export default {
       this.$router.push(url)
     },
     select(location,name){
+      
       if(localStorage.getItem('select_id')==1){
         localStorage.setItem('location',location);
         localStorage.setItem('origin_name',name);
         localStorage.setItem('changeAddress',1);
+        var origin_longitude =  location.split(',')[0];
+        var origin_latitude =  location.split(',')[1];
+        localStorage.setItem('origin_longitude',origin_longitude);
+        localStorage.setItem('origin_latitude',origin_latitude);
       }
       if(localStorage.getItem('select_id')==0){
         localStorage.setItem('en_location',location);
-         localStorage.setItem('destination_name',name)
+         localStorage.setItem('destination_name',name);
+         localStorage.setItem('en_changeAddress',2);
+          var destination_longitude =  location.split(',')[0];
+        var destination_latitude =  location.split(',')[1];
+        localStorage.setItem('destination_longitude',destination_longitude);
+        localStorage.setItem('destination_latitude',destination_latitude);
       }
       this.navgateTo('/');
     },

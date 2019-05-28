@@ -6,25 +6,7 @@
         <span>张代驾</span>
       </div>
     </div>
-    <div class="amap-page-container">
-      <div class="amap">
-        <el-amap vid="amap" :plugin="plugin"  :amap-manager="amapManager"  class="amap-demo">
-          <el-amap-marker
-            v-for="(marker, index) in markers"
-            :key="index"
-            vid="markers"
-            :position="marker.position"
-            :visible="marker.visible"
-            :draggable="marker.draggable"
-            :label="marker.label"
-          ></el-amap-marker>
-        </el-amap>
-      </div>
-      <div class="toolbar">
-        <span v-if="loaded">location: lng = {{ lng }} lat = {{ lat }}</span>
-        <span v-else>正在定位</span>
-      </div>
-    </div>
+    <div id="container"></div>
     <div class="meizf" v-show="showId==1">
       <div class="moban">
         <img class="gth" src="@/assets/gth.png" alt srcset>
@@ -35,9 +17,34 @@
         <div class="pay" @click="navgateTo('order')">马上支付</div>
       </div>
     </div>
+    <div class="meizf" v-show="showId==2">
+      <div class="moban">
+        <img class="gth" src="@/assets/gth.png" alt srcset>
+        <div class="textInfo">
+          <div class="v-text">您当前存在待接订单</div>
+          <!-- <div class="v-text">请先进行支付</div> -->
+        </div>
+        <div class="pay" @click="navgateTo('wait')">马上进入</div>
+      </div>
+    </div>
+    <div class="meizf" v-show="showId==3">
+      <div class="moban">
+        <img class="gth" src="@/assets/gth.png" alt srcset>
+        <div class="textInfo">
+          <div class="v-text">您当前存在进行中订单</div>
+          <!-- <div class="v-text">请先进行支付</div> -->
+        </div>
+        <div class="pay" @click="changeToNavgate()">马上进入</div>
+      </div>
+    </div>
     <div class="maker">
       <div class="address">
-        <input type="text" placeholder="请输入当前位置" :value="origin_name" @click="navgateTo('address',1)">
+        <input
+          type="text"
+          placeholder="请输入当前位置"
+          :value="origin_name"
+          @click="navgateTo('address',1)"
+        >
         <input
           type="text"
           placeholder="请输入目的地"
@@ -45,16 +52,16 @@
           @click="navgateTo('address',0)"
         >
       </div>
-      <div class="price">
+      <div class="price" v-if="priceShow==1">
         <div class="money">
           约
-          <span>30.00</span>元
+          <span>{{estimate_trip_price}}</span>元
           <img class="jt" src="@/assets/jt.png" alt srcset>
         </div>
         <div class="yhz">优惠券已抵扣5.00元</div>
       </div>
       <div class="btn-pd">
-        <v-button @actionClick="getOrder()">确认下单</v-button>
+        <v-button @actionClick="sure()">确认下单</v-button>
       </div>
     </div>
     <div class="lving" v-show="showUser==1" @click="getUserShow(0)">
@@ -95,7 +102,7 @@
             </div>
           </div>
         </div>
-        <div class="jf">
+        <div class="jf" @click="navgateTo('rule')">
           计费规则
           <span>
             <img class="jt" src="@/assets/jt.png" alt srcset>
@@ -106,144 +113,148 @@
   </div>
 </template>
 <script>
-import { AMapManager } from 'vue-amap';
-let amapManager = new AMapManager();
 import Button from "@/components/Button";
+import { Indicator } from "mint-ui";
 export default {
   data() {
-    const self = this;
     return {
       showUser: 0,
       showId: 0,
       destination_name: "",
       userInfo: {},
       origin_name: "",
-      label: [],
-      markers: [],
-      center: [0, 0],
-      lng: 0,
-      lat: 0,
-      loaded: false,
-      amapManager:amapManager,
-      plugin: [
-        {
-          enableHighAccuracy: true, //是否使用高精度定位，默认:true
-          timeout: 100, //超过10秒后停止定位，默认：无穷大
-          maximumAge: 0, //定位结果缓存0毫秒，默认：0
-          convert: true, //自动偏移坐标，偏移后的坐标为高德坐标，默认：true
-          showButton: true, //显示定位按钮，默认：true
-          buttonPosition: "RB", //定位按钮停靠位置，默认：'LB'，左下角
-          showMarker: false, //定位成功后在定位到的位置显示点标记，默认：true
-          showCircle: true, //定位成功后用圆圈表示定位精度范围，默认：true
-          panToLocation: true, //定位成功后将定位到的位置作为地图中心点，默认：true
-          zoomToAccuracy: true, //定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：f
-          extensions: "all",
-          pName: "Geolocation",
-          events: {
-            init(o) {
-              // o 是高德地图定位插件实例
-
-              o.getCurrentPosition((status, result) => {
-                //console.log(result);
-                if (result && result.position) {
-                  self.lng = result.position.lng;
-                  self.lat = result.position.lat;
-                  localStorage.setItem("yl_location", result.position.lng+','+result.position.lat);
-                  if(localStorage.getItem('changeAddress')!=1){
-                  localStorage.setItem("location", result.position.lng+','+result.position.lat);
-                  }
-                  self.loaded = true;
-                  self.icon =
-                    "https://webapi.amap.com/theme/v1.3/markers/n/mark_bs.png";
-                  // self.$nextTick();
-
-                  self.geocoder(result.position.lng, result.position.lat);
-                  self.getMasker().then(res => {
-                    let items = res.data.list;
-                    var lab = [];
-                    var markerItem = items.map((item, index) => {
-                      return {
-                        position: [
-                          parseFloat(item.longitude),
-                          parseFloat(item.latitude)
-                        ],
-                        visible: true,
-                        draggable: false
-                      };
-                    });
-                    var markerItem = items.map((item, index) => {
-                      return {
-                        position: [
-                          parseFloat(item.longitude),
-                          parseFloat(item.latitude)
-                        ],
-                        visible: true,
-                        draggable: false,
-                        label: { content: "附近司机", offset: [0, 20] }
-                      };
-                    });
-                    markerItem.push({
-                      position: [self.lng, self.lat],
-                      visible: true,
-                      draggable: true,
-                      label: { content: "我的位置", offset: [0, 20] }
-                    });
-                    self.label = lab;
-                    self.markers = markerItem;
-                    self.$nextTick();
-                  });
-                }
-              });
-            }
-          }
-        }
-      ]
+      destination_longitude: "",
+      destination_latitude: "",
+      destination_name: "",
+      origin_longitude: "",
+      origin_latitude: "",
+      estimate_trip_price: "",
+      priceShow: 0
     };
   },
   created() {
+    Indicator.open({
+      text: "加载中...",
+      spinnerType: "fading-circle"
+    });
+    this.index();
+    this.getConfigByLngLat();
     this.getUserInfo();
-    this.destination_name = localStorage.getItem("destination_name");
-  //  this.getOrderMeta();
+    if (localStorage.getItem("en_changeAddress")) {
+      this.destination_name = localStorage.getItem("destination_name");
+      this.destination_longitude = localStorage.getItem(
+        "destination_longitude"
+      );
+      this.destination_latitude = localStorage.getItem("destination_latitude");
+    } else {
+      this.destination_longitude = "";
+      this.destination_latitude = "";
+      this.destination_name = "";
+    }
+    // localStorage.removeItem('en_changeAddress');
+    this.getOrderMeta();
   },
   mounted() {
-     
+    var marker = "";
+    var that = this;
+    var map = new AMap.Map("container", {
+      resizeEnable: true
+    });
+    map.plugin("AMap.Geolocation", function() {
+      var geolocation = new AMap.Geolocation({
+        enableHighAccuracy: true, //是否使用高精度定位，默认:true
+        maximumAge: 0, //定位结果缓存0毫秒，默认：0
+        convert: true, //自动偏移坐标，偏移后的坐标为高德坐标，默认：true      //显示定位按钮，默认：true   //定位按钮停靠位置，默认：'LB'，左下角
+        buttonOffset: new AMap.Pixel(10, 20), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+        showMarker: false, //定位成功后在定位到的位置显示点标记，默认：true      //定位成功后用圆圈表示定位精度范围，默认：true
+        panToLocation: true, //定位成功后将定位到的位置作为地图中心点，默认：true
+        zoomToAccuracy: true
+      });
+      map.addControl(geolocation);
+      geolocation.getCurrentPosition();
+      AMap.event.addListener(geolocation, "complete", onComplete); //返回定位信息
+      AMap.event.addListener(geolocation, "error", onError); //返回定位出错信息
+      function onComplete(data) {
+        console.log(data);
+        marker = new AMap.Marker({
+          icon: "http://zhangdj.yxsoft.net/assets/my.png",
+          offset: new AMap.Pixel(-10, -10),
+          position: new AMap.LngLat(data.position.lng, data.position.lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+          title: "我的位置",
+          draggable: true
+        });
+        localStorage.setItem(
+          "mylocation",
+          data.position.lng + "," + data.position.lat
+        );
+        if (localStorage.getItem("changeAddress")) {
+          var o_location = localStorage.getItem("location");
+          that.origin_longitude = o_location.split(",")[0];
+          that.origin_latitude = o_location.split(",")[1];
+        } else {
+          var o_location = data.position.lng + "," + data.position.lat;
+          that.origin_longitude = data.position.lng;
+          that.origin_latitude = data.position.lat;
+        }
+        that.getAddressName(o_location).then(res => {
+          //console.log(res);
+          localStorage.setItem("city", res.regeocode.addressComponent.city);
+          that.origin_name = res.regeocode.formatted_address;
+          localStorage.removeItem("changeAddress");
+        });
+        marker.on("dragend", function(res) {
+          var location = res.lnglat.lng + "," + res.lnglat.lat;
+          that.origin_longitude = res.lnglat.lng;
+          that.origin_latitude = res.lnglat.lat;
+          that.getAddressName(location).then(res => {
+            that.origin_name = res.regeocode.formatted_address;
+          });
+        });
+        map.add(marker);
+        that.getMasker(data.position.lng, data.position.lat).then(res => {
+          let list = res.data.list;
+          list.forEach((item, index) => {
+            map.add(that.getMaskerIcon(item.longitude, item.latitude));
+          });
+        });
+        Indicator.close();
+        if (that.destination_name != "") {
+          that.estimateTripPrice();
+        }
+      }
+
+      function onError(data) {
+        that.Toast({
+          message: "定位失败",
+          duration: 1000
+        });
+      }
+    });
   },
   methods: {
-    //地址搜索经纬度
-    getAddressJW(address) {
-      return new Promise((resolve,reject)=>{
-        this.$getAjax('https://restapi.amap.com/v3/geocode/geo?address='+address+'&key=5d36d977b287953b8e7037325b1085bf')
-        .then(res=>{
-            //console.log(res);
-
-        })
-      })
-    },
-    geocoder(lnglatX, lnglatY) {
-      var geocoder = new AMap.Geocoder({
-        radius: 1000 //范围，默认：500
-      });
-      ////console.log([lnglatX, lnglatY]);
-      geocoder.getAddress([lnglatX, lnglatY], (status, result) => {
-        if (status === "complete" && result.info === "OK") {
-          ////console.log(result);
-          localStorage.setItem("city", result.regeocode.addressComponent.city);
-          if(localStorage.getItem('changeAddress')==1){
-            this.origin_name = localStorage.getItem('origin_name');
-          }else{
-            this.origin_name = result.regeocode.formattedAddress;
-          }
-          localStorage.setItem('changeAddress',0);
-          this.getAddressJW(this.origin_name);
+    estimateTripPrice() {
+      let data = {
+        origin_longitude: this.origin_longitude,
+        origin_latitude: this.origin_latitude,
+        destination_longitude: this.destination_longitude,
+        destination_latitude: this.destination_latitude
+      };
+      this.$postAjax("/api/finance/estimateTripPrice", data).then(res => {
+        console.log(res);
+        if (res.status) {
+          this.estimate_trip_price = res.data.estimate_trip_price;
+          this.priceShow = 1;
+        } else {
+          this.Toast({
+            message: res.msg,
+            duration: 1000
+          });
         }
       });
     },
-    changeNow(e) {
-      this.origin_name = e.target.value;
-    },
-    navgateTo(url,id) {
+    navgateTo(url, id) {
       this.$router.push(url);
-      localStorage.setItem('select_id',id);
+      localStorage.setItem("select_id", id);
     },
     getToken(url) {
       if (!localStorage.getItem("access_token")) {
@@ -252,38 +263,178 @@ export default {
         this.$router.push(url);
       }
     },
-    getMasker() {
+    getAddressName(location) {
       return new Promise((resolve, reject) => {
-        let data = { longitude: this.lng, latitude: this.lat };
+        let data = {
+          location: location,
+          key: "5d36d977b287953b8e7037325b1085bf"
+        };
+        this.$getAjax("http://restapi.amap.com/v3/geocode/regeo", data).then(
+          res => {
+            resolve(res);
+          }
+        );
+      });
+    },
+    getMasker(lng, lat) {
+      return new Promise((resolve, reject) => {
+        let data = { longitude: lng, latitude: lat };
         this.$postAjax("/api/driver/getNearDriver", data).then(res => {
           resolve(res);
         });
       });
     },
+    getMaskerIcon(lng, lat) {
+      var device = new AMap.Marker({
+        icon: "http://zhangdj.yxsoft.net/assets/we.png",
+        offset: new AMap.Pixel(-10, -10),
+        position: new AMap.LngLat(lng, lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+        title: "附近司机位置",
+        draggable: false
+      });
+      return device;
+    },
     getUserInfo() {
       this.$postAjax("/api/user/getUserInfo", {}).then(res => {
         this.userInfo = res.data;
+        localStorage.setItem("header_img", res.data.avatar);
       });
     },
     getOrder() {
-        localStorage.setItem('origin_name',this.origin_name);
-        this.getToken("surePage");
-      
-      
+      localStorage.setItem("origin_longitude", this.origin_longitude);
+      localStorage.setItem("origin_latitude", this.origin_latitude);
+      localStorage.setItem("origin_name", this.origin_name);
+      localStorage.setItem("destination_longitude", this.destination_longitude);
+      localStorage.setItem("destination_latitude", this.destination_latitude);
+      localStorage.setItem("origin_longitude", this.origin_longitude);
+      let data = {
+        origin_longitude: this.origin_longitude,
+        origin_latitude: this.origin_latitude,
+        origin_name: this.origin_name,
+        destination_longitude: this.destination_longitude,
+        destination_latitude: this.destination_latitude,
+        destination_name: this.destination_name,
+        is_add_price: 0
+      };
+      this.$postAjax("/api/trip/createTrip", data).then(res => {
+        console.log(res);
+        localStorage.setItem("trip_id", res.data.trip_id);
+        if (res.status == 1) {
+          this.Toast({
+            message: res.msg,
+            duration: 1000
+          });
+          setTimeout(() => {
+            this.$router.push("wait");
+          }, 1000);
+        } else if (res.status == -1) {
+          this.Toast({
+            message: res.msg,
+            duration: 1000
+          });
+          localStorage.setItem("msg", res.msg);
+          localStorage.setItem("add_price_desc", res.data.add_price_desc);
+          setTimeout(() => {
+            this.$router.push("freePage");
+          }, 1000);
+        } else {
+          this.Toast({
+            message: res.msg,
+            duration: 1000
+          });
+        }
+      });
+    },
+    sure(){
+      this.getLanger()
+      .then(res=>{
+        if(res.route.paths[0].distance>1000){
+          localStorage.setItem('yl_long',this.origin_longitude+','+this.origin_latitude);
+          this.$router.push('surePage');
+        }else{
+          this.getOrder()
+        }
+      })
     },
     getOrderMeta() {
       this.$postAjax("/api/trip/getUnDoneTripId", {}).then(res => {
         //console.log(res);
         if (res.data.trip_id != 0) {
-          this.showId = 1;
           localStorage.setItem("trip_id", res.data.trip_id);
+          this.getOderInfo(res.data.trip_id);
         } else {
-          this.showId = 0;
+          //  this.Toast({
+          //    message: res.msg,
+          //   duration:1000
+          // })
         }
       });
     },
+    getLanger() {
+      return new Promise((resolve,reject)=>{
+        this.$getAjax(
+        "https://restapi.amap.com/v3/direction/walking?origin=" +
+          localStorage.getItem("mylocation") +
+          "&destination=" +
+         this.origin_longitude +','+this.origin_latitude+
+          "&&key=5d36d977b287953b8e7037325b1085bf"
+      ).then(res => {
+        console.log(res);
+        
+        resolve(res)
+      });
+      })
+      
+    },
     getUserShow(id) {
+      if (!localStorage.getItem("access_token")) {
+        this.$router.push("login");
+      }
       this.showUser = id;
+    },
+    changeToNavgate() {
+      var id = localStorage.getItem("order_status");
+      if (id == 1 || id == 2 || id == 3) {
+        this.navgateTo("success");
+      }
+      if (id == 4) {
+        this.navgateTo("underway");
+      }
+      if (id == 5) {
+        this.navgateTo("order");
+      }
+    },
+    getConfigByLngLat() {
+      this.$postAjax("/api/config/getConfigByLngLat", {}).then(res => {
+        let auto_order_cancel_time =
+          parseInt(res.data.auto_order_cancel_time) * 60;
+        localStorage.setItem("auto_order_cancel_time", auto_order_cancel_time);
+      });
+    },
+    index() {
+      this.$postAjax("/api/index/index", {}).then(res => {
+        localStorage.setItem("im_service_id", res.data.im_service_id);
+      });
+    },
+    getOderInfo(id) {
+      this.$postAjax("/api/trip/tripInfo", { trip_id: id }).then(res => {
+        localStorage.setItem('driver_uid',res.data.driver_uid);
+        if (res.data.status == 5) {
+          this.showId = 1;
+        }
+        if (res.data.status == 0) {
+          this.showId = 2;
+        }
+        if (
+          res.data.status == 1 ||
+          res.data.status == 2 ||
+          res.data.status == 3 ||
+          res.data.status == 4
+        ) {
+          this.showId = 3;
+        }
+        localStorage.setItem("order_status", res.data.status);
+      });
     }
   },
   components: {

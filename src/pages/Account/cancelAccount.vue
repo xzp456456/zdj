@@ -10,8 +10,8 @@
         <div class="text">注销后，所有的信息将清空，请谨慎操作！</div>
       </div>
     </div>
-    <div class="row mar">
-      <button class="centel">取消</button>
+    <div class="mar">
+      <button class="centel" @click="navgateTo('accountSecurity')">取消</button>
       <button class="read"  @click="deletes()">确定</button>
     </div>
   </div>
@@ -24,6 +24,9 @@ export default {
     }
   },
   methods:{
+    navgateTo(url){
+      this.$router.push(url)
+    },
     deletes(){
       this.$postAjax('/api/user/delete',{reason:this.reason})
       .then(res=>{
@@ -62,7 +65,9 @@ export default {
 }
 
 .mar{
+  margin: 0 auto;
     margin-top: 0.5rem;
+  width: 9.2rem;
 }
 
 .read {

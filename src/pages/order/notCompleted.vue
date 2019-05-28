@@ -5,7 +5,8 @@
       <div class="row">未完成订单</div>
     </div>
     <div class="item" v-for="(item,index) in list" :key="index"  @click="navgateTo('orderDetails',item.trip_id,item.current_price)">
-      <div class="list" v-if="item.is_finish==0">
+      <div class="all" v-if="item.is_finish==0">
+      <div class="list" >
         <div class="row">
           <span class="left time">{{item.create_time}}</span>
           <span class="right ing">{{item.status_desc}}</span>
@@ -13,7 +14,7 @@
       </div>
       <div class="list">
         <div class="row">
-          <span class="left wen"><img class="dz" src="@/assets/dz.png" />{{item.origin_name}}</span>
+          <span class="left wen wen1"><img class="dz" src="@/assets/dz.png" />出发地：{{item.origin_name}}</span>
           <span class="right mun">
             <!-- 17张 -->
             <img class="jt" src="@/assets/jt.png" alt srcset>
@@ -22,15 +23,16 @@
       </div>
       <div class="list">
         <div class="row">
-          <span class="left wen"><img class="dz" src="@/assets/dz.png" />{{item.destination_name}}</span>
+          <span class="left wen wen2"><img class="dz" src="@/assets/dz.png" />目的地：{{item.destination_name}}</span>
            </div>
       </div>
       <div class="mar"></div>
+      </div>
     </div>
     <div class="title">
       <div class="row">已完成订单</div>
     </div>
-     <div class="all" v-for="(item,index) in list" :key="index" >
+     <div class="all" v-for="(item,index) in list" :key="'k'+index" >
        <div v-if="item.is_finish==1">
      <div class="list">
         <div class="row">
@@ -41,7 +43,7 @@
       </div>
       <div class="list">
         <div class="row">
-          <span class="left wen"><img class="dz" src="@/assets/dz.png" />{{item.origin_name}}</span>
+          <span class="left wen wen1"><img class="dz" src="@/assets/dz.png" />出发地：{{item.origin_name}}</span>
           <span class="right mun">
          
             <img class="jt" src="@/assets/jt.png" alt srcset>
@@ -50,7 +52,7 @@
       </div>
        <div class="list">
         <div class="row">
-          <span class="left wen"><img class="dz" src="@/assets/dz.png" />{{item.destination_name}}</span>
+          <span class="left wen wen2"><img class="dz" src="@/assets/dz.png" />目的地：{{item.destination_name}}</span>
           <span class="right mun">
            
           </span>
@@ -94,6 +96,7 @@ export default {
   data(){
     return{
       list:[],
+      vlist:[],
       page:1,
       page_size:10
     }
@@ -104,13 +107,14 @@ export default {
   methods:{
     getOrder(){
       let data = {page:this.page,page_size:this.page_size }
-      this.$postAjax('/api/trip/tripInfo',data)
+      this.$postAjax('/api/trip/getMyList',data)
       .then(res=>{
         this.list = res.data.list;
+        this.vlist = res.data.list;
       })
     },
     getStatus(id){
-      this.$$postAjax('/api/trip/getMyList',{trip_id:id})
+      this.$postAjax('/api/trip/getMyList',{trip_id:id})
       .then(res=>{
         if(res.data.status){
 
@@ -138,6 +142,7 @@ top: 0.04rem;
   height:.24rem;
 background:rgba(221,221,221,1);
 opacity:0.4;
+clear: both;
 }
 .jt {
   width: 0.16rem;
@@ -154,6 +159,15 @@ opacity:0.4;
   font-family: PingFang-SC-Medium;
   font-weight: 500;
   color: rgba(51, 51, 51, 1) !important;
+  
+}
+
+.wen1{
+  padding-top:0.5rem; 
+}
+
+.wen2{
+  padding-bottom:0.5rem; 
 }
 
 .num {
@@ -174,10 +188,13 @@ opacity:0.4;
   border-bottom: 1px solid #dddddd;
 }
 
+.item{
+  clear: both;
+ 
+}
+
 .list {
   width: 100%;
-  height: 1rem;
-  line-height: 1rem;
 }
 
 .time {
@@ -185,6 +202,7 @@ opacity:0.4;
   font-family: PingFang-SC-Bold;
   font-weight: bold;
   color: rgba(51, 51, 51, 1);
+  padding-top:0.6rem; 
 }
 
 .ing {
@@ -192,6 +210,7 @@ opacity:0.4;
   font-family: PingFang-SC-Bold;
   font-weight: bold;
   color: rgba(72, 203, 183, 1);
+   padding-top:0.6rem; 
 }
 </style>
 

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="list" @click="navgateTo('newPhone')">
+        <div class="list" @click="navgateTo('changePhone')">
             <div class="row">
             <div class="left">
                <div class="change">修改手机号</div>

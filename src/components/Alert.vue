@@ -1,17 +1,29 @@
 <template>
   <div>
     <div class="lving">
-      <div class="success">
+      <div class="success" v-if="bind==0">
         <img class="success-img" src="@/assets/success.png" alt srcset>
         <div class="suc">提交成功！</div>
         <div class="day">请在3-5个工作日查看您的账户</div>
-        <div class="read">确认</div>
+        <div class="read" @click="MyClickEvent()">确认</div>
+      </div>
+       <div class="success" v-if="bind==1">
+        <div class="suc">未绑定银行卡！</div>
+        <!-- <div class="day">请在3-5个工作日查看您的账户</div> -->
+        <div class="read" @click="MyClickEvent()">去绑定</div>
       </div>
     </div>
   </div>
 </template>
 <script>
-export default {};
+export default {
+  props:['bind'],
+   methods:{
+        MyClickEvent(){
+             this.$emit('actionClick');
+        }
+    }
+};
 </script>
 <style scoped="">
 .read{

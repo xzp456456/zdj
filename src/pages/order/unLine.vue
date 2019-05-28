@@ -59,6 +59,11 @@ import Button from "@/components/Button";
 export default {
   components: {
     "v-button": Button
+  },
+  methods:{
+    getUserInfo(){
+      
+    }
   }
 };
 </script>

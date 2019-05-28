@@ -3,9 +3,9 @@
     <div class="top">
       <div class="list">
         <span class="left">
-          <i>姓名</i>：{{info.realname}}
+          <i>姓名</i>：{{info.bank_username}}
         </span>
-        <span class="right change">修改</span>
+        <span class="right change" @click="navgateTo('bindCard')">修改</span>
       </div>
       <div class="list">
         <span class="left">
@@ -14,7 +14,7 @@
       </div>
       <div class="list">
         <span class="left">
-          <i>银行卡号</i>：624551265225255
+          <i>银行卡号</i>：{{info.bank_card_number}}
         </span>
       </div>
       <div class="border"></div>
@@ -22,19 +22,19 @@
     <div class="row mok">提现金额</div>
     <div class="row roke">
       <label for>￥</label>
-      <input type="text" placeholder="最低提现金额为1元" class="money">
+      <input type="text" placeholder="最低提现金额为100元" v-model="money"  class="money">
     </div>
     <div class="row layout">实际到账金额：￥506.32</div>
     <div class="border"></div>
     <div class="keyi">
       <div class="row">
-        <span class="left moneykey">可提现金额{{info.balance}}元</span>
-        <span class="right all">全部提现</span>
+        <span class="left moneykey" >可提现金额{{info.balance}}元</span>
+        <span class="right all" @click="all(info.balance)">全部提现</span>
       </div>
     </div>
     <div class="btns">
         <div class="btn">
-      <v-button>确认提现</v-button>
+      <v-button @actionClick="getMoeny()">确认提现</v-button>
       </div>
     </div>
     <!-- <div class="rule">
@@ -43,7 +43,8 @@
       <div class="li">2、7天内只能提现一次；</div>
       <div class="li">3、最低提现金额为1元；</div>
     </div> -->
-    <v-alert v-show="showId==1"></v-alert>
+    <v-alert v-show="showId==1" :bind="bind"  @actionClick="navgateTo('accountBalance')"></v-alert>
+    <v-alert v-show="showId==2" :bind="bind"  @actionClick="navgateTo('bindCard')"></v-alert>
   </div>
 </template>
 <script>
@@ -53,18 +54,47 @@ export default {
   data(){
     return{
       showId:0,
-      info:{}
+      info:{},
+      money:'',
+      bind:0
     }
   },
   created(){
     this.getUserInfo()
   },
   methods:{
+    
+    navgateTo(url){
+      this.$router.push(url)
+    },
+    all(num){
+      this.money = num
+    },
      getUserInfo(){
       this.$postAjax('/api/user/getUserInfo',{})
       .then(res=>{
         //console.log(res)
         this.info = res.data;
+        if(res.data.bank_card_number==""){
+          this.bind = 1;
+          this.showId = 2;
+        }
+      })
+    },
+    getMoeny(){
+      let data = {account_type:1,amount:this.money }
+      this.$postAjax('/api/withdraw/submit',data)
+      .then(res=>{
+        if(res.status){
+           this.showId = 1;
+          this.getUserInfo()
+         
+        }else{
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          })
+        }
       })
     }
   },

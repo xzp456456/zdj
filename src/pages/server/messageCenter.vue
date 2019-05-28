@@ -1,21 +1,24 @@
 <template>
     <div>
         <div class="navBar">
-            <div class="nav active">处理中</div>
-            <div class="nav">已完成</div>
-        </div>
-        <div class="time">
-            <div class="row">
-            <span class="left day">2月28日 18:30</span>
-            <span class="right ing">进行中</span>
-            </div>
+            <div class="nav" :class="status==0?'active':''" @click="changeStatus(0)">处理中</div>
+            <div class="nav" :class="status==1?'active':''"  @click="changeStatus(1)">已完成</div>
         </div>
         <div class="scroll">
+        <div class="all" v-for="(item,index) in list" :key="index">
+        <div class="time">
+            <div class="row">
+            <span class="left day">{{item.on_time}}</span>
+            <span class="right ing" v-if="status==0">进行中</span>
+             <span class="right ing" v-if="status==1">已完成</span>
+            </div>
+        </div>
+        
         <div class="address">
             <div class="list">
                 <div class="row">
                 <img class="dz left" src="@/assets/dz.png" alt="" srcset="">
-                <span class="pd">代驾出发地</span>
+                <span class="pd">代驾出发地:{{item.origin_name}}</span>
                <img class="jt right" src="@/assets/jt.png" alt="" srcset="">
                </div>
             </div>
@@ -24,11 +27,11 @@
             <div class="list">
                 <div class="row">
                 <img class="dz left" src="@/assets/dz.png" alt="" srcset="">
-                <span class="pd">代驾出发地</span>
+                <span class="pd">代驾目的地:{{item.destination_name}}</span>
                </div>
             </div>
         </div>
-       
+       </div>
         </div>
         <div class="bottom">
     <div class="weui-loadmore" v-show="load==1">
@@ -47,9 +50,10 @@ export default {
         return{
             load:2,
             list:[],
-            page:0,
+            page:1,
             page_size:10,
-            total:''
+            total:'',
+            status:0
         }
     },
     created(){
@@ -57,8 +61,12 @@ export default {
         this.getMore();
     },
     methods:{
+        changeStatus(id){
+            this.status = id;
+            this.getList();
+        },
         getList(){
-            let data = { page:this.page,page_size:this.page_size }
+            let data = { page:this.page,page_size:this.page_size,status:this.status }
             this.$postAjax('/api/complain/myComplain',data)
             .then(res=>{
                 //console.log(res);
@@ -119,7 +127,6 @@ color:rgba(187,187,187,1);
 
 .list{
     height: 1rem;
-    line-height: 1rem;
     font-size:.373333rem;
 font-family:PingFang-SC-Medium;
 font-weight:500;
@@ -132,7 +139,7 @@ color:rgba(51,51,51,1);
 
 .list img{
     position: relative;
-    top: 0.33rem;
+    top: 0.1rem;
 }
 
 .navBar{

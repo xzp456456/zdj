@@ -40,7 +40,6 @@
   </div>
 </template>
 <script>
-import { RyMI } from '@/util/public'
 export default {
   data(){
     return{

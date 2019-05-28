@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import VueAMap from 'vue-amap';
 import router from './router'
 import 'mint-ui/lib/style.css';
 import { getAjax,postAjax,postFileUp } from './request/axios'
@@ -12,7 +13,7 @@ Vue.prototype.MessageBox = MessageBox;
 Vue.prototype.$getAjax = getAjax;
 Vue.prototype.$postAjax = postAjax;
 Vue.prototype.$postFileUp = postFileUp;
-import VueAMap from 'vue-amap';
+
 import 'weui';
 import weui from 'weui.js';
 Vue.prototype.weui = weui;

@@ -39,8 +39,8 @@ export default {
       this.$router.push(url);
     },
     getLanger(){
-this.$getAjax('https://restapi.amap.com/v3/direction/walking?origin='+localStorage.getItem('location')+
-'&destination='+localStorage.getItem('yl_location')+'&&key=5d36d977b287953b8e7037325b1085bf')
+this.$getAjax('https://restapi.amap.com/v3/direction/walking?origin='+localStorage.getItem('mylocation')+
+'&destination='+localStorage.getItem('yl_long')+'&&key=5d36d977b287953b8e7037325b1085bf')
 .then(res=>{
   //console.log(res);
   this.dis = res.route.paths[0].distance;
@@ -64,8 +64,8 @@ this.$getAjax('https://restapi.amap.com/v3/direction/walking?origin='+localStora
       };
       this.$postAjax("/api/trip/createTrip", data).then(res => {
         //console.log(res);
-        if(res.status){
-          localStorage.setItem(trip_id,res.data.trip_id);
+        if(res.status==1){
+          localStorage.setItem('trip_id',res.data.trip_id);
          this.Toast({
             message: res.msg,
             duration:1000
@@ -73,7 +73,15 @@ this.$getAjax('https://restapi.amap.com/v3/direction/walking?origin='+localStora
           setTimeout(()=>{
             this.navgateTo('wait')
           },1000)
-        }else{
+        }else if(res.status==-1){
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          })
+           setTimeout(()=>{
+            this.navgateTo('freePage')
+          },1000)
+        } else{
           this.Toast({
             message: res.msg,
             duration:1000

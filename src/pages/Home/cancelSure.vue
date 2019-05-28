@@ -1,19 +1,25 @@
 <template>
   <div class="map">
-    <!-- <div id="container"></div> -->
+    <div class="header">
+      <div class="row">
+      <span class="left"><img class="back" @click="navgateTo('/')" src="@/assets/de.png" alt="" srcset=""></span>
+      <span class="right" @click="navgateTo('serverUser')">在线客服</span>
+      </div>
+    </div>
+    <div id="container"></div>
 
     <div class="bottom">
       <div class="row mag">
-        <img class="moren left" src="@/assets/moren.png" alt srcset>
+        <img class="moren left" :src="device.avatar" alt srcset>
         <div class="left mlf">
-          <span class="name">胡师傅</span>
-          <div class="lin">叫代驾1104次</div>
+          <span class="name">{{device.realname}}</span>
+          <div class="lin">叫代驾{{device.drive_times}}次</div>
         </div>
       </div>
       <div class="textCenter">
         <div class="text">行程已取消</div>
         <div class="kh">02月27日 14:07 客户主动取消</div>
-        <div class="qx">
+        <div class="qx" @click="navgateTo('rule')">
           <img class="gth" src="@/assets/gth.png" alt srcset>
           取消规则
         </div>
@@ -27,7 +33,8 @@ export default {
   data() {
     return {
       wait: 0,
-      reason:{}
+      reason:{},
+      device:{}
     };
   },
   components: {
@@ -35,11 +42,24 @@ export default {
   },
   created(){
     this.getReason();
+    this.getUserInfo();
   },
   mounted() {
-    //this.getMap();
+    this.getMap();
   },
   methods: {
+    getUserInfo(){
+      this.$postAjax('/api/user/getUserInfo',{obj_uid:localStorage.getItem('uid')})
+      .then(res=>{
+        console.log(res)
+        this.device = res.data;
+      })
+
+    },
+    setTallId(){
+      var id = localStorage.getItem('im_service_id');
+      localStorage.setItem('tall_id',id)
+    },
     navgateTo(url) {
       this.$router.push(url);
     },
@@ -62,7 +82,7 @@ export default {
           maximumAge: 0, //定位结果缓存0毫秒，默认：0
           convert: true, //自动偏移坐标，偏移后的坐标为高德坐标，默认：true      //显示定位按钮，默认：true   //定位按钮停靠位置，默认：'LB'，左下角
           buttonOffset: new AMap.Pixel(10, 20), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
-          showMarker: true, //定位成功后在定位到的位置显示点标记，默认：true      //定位成功后用圆圈表示定位精度范围，默认：true
+          showMarker: false, //定位成功后在定位到的位置显示点标记，默认：true      //定位成功后用圆圈表示定位精度范围，默认：true
           panToLocation: true, //定位成功后将定位到的位置作为地图中心点，默认：true
           zoomToAccuracy: true
         });
@@ -84,7 +104,7 @@ export default {
     },
     getMarker(lat, lng) {
       var marker = new AMap.Marker({
-        icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_bs.png",
+        icon: "http://zhangdj.yxsoft.net/assets/my.png",
         offset: new AMap.Pixel(-10, -10),
         position: new AMap.LngLat(lng, lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
         title: "我的位置"
@@ -95,6 +115,17 @@ export default {
 };
 </script>
 <style scoped="">
+.back{
+  width: .24rem;
+  transform: rotate(-180deg);
+  position: relative;
+  top:0.1rem;
+}
+.header{
+  width: 100%;
+  height: 1.3rem;
+  line-height: 1.3rem;
+}
 .textCenter {
   text-align: center;
 }

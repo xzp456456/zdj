@@ -1,101 +1,170 @@
 <template>
   <div class="map">
     <div id="container"></div>
-
+    <div class="change" @click="navgateChange('address')">改变行程</div>
     <div class="bottom">
       <div class="row mag">
-          <img class="moren left" src="@/assets/moren.png" alt="" srcset="">
-          <div class="left mlf">
-              <span class="name">胡师傅</span>
-              <span class="pj"><img class="xinxing" src="@/assets/xinxing.png" alt="" srcset="">5.0</span>
-              <div class="lin">代驾1104次 驾龄5年</div>
-            </div>
-            <div class="right">
-                <img class="line" src="@/assets/duanxin.png" alt="" srcset="">
-            <img class="mobile" src="@/assets/dianhua.png" alt="" srcset="">
-            </div>
+        <img class="moren left" :src="driver.avatar" alt srcset>
+        <div class="left mlf">
+          <span class="name">{{driver.realname}}</span>
+          <span class="pj">
+            <img class="xinxing" src="@/assets/xinxing.png" alt srcset>
+            {{driver.driver_star}}
+          </span>
+          <div class="lin">代驾{{driver.drive_times}}次 驾龄{{driver.driver_years}}</div>
+        </div>
+        <div class="right">
+          <img class="line" @click="navgateTo('serverUser')" src="@/assets/duanxin.png" alt srcset>
+          <a :href="'tel:'+driver.mobile">
+            <img class="mobile" src="@/assets/dianhua.png" alt srcset>
+          </a>
+        </div>
       </div>
-      <v-button myclass="wid"  >取消代驾</v-button>
+      <v-button myclass="wid" @actionClick="cancel()">取消代驾</v-button>
     </div>
   </div>
 </template>
 <script>
 import Button from "@/components/Button";
 export default {
-    data(){
-        return{
-            wait:0
-        }
-    },
+  data() {
+    return {
+      wait: 0,
+      driver: {},
+      map: ""
+    };
+  },
   components: {
     "v-button": Button
   },
   mounted() {
-    this.getMap();
-  },
-  methods: {
-    navgateTo(url) {
-      this.$router.push(url);
-    },
-    getMap() {
-      var that = this;
-      var map = new AMap.Map("container", {
-        resizeEnable: true
-      });
-      map.plugin("AMap.Geolocation", function() {
-        var geolocation = new AMap.Geolocation({
-          enableHighAccuracy: true, //是否使用高精度定位，默认:true
-          timeout: 10000, //超过10秒后停止定位，默认：无穷大
-          maximumAge: 0, //定位结果缓存0毫秒，默认：0
-          convert: true, //自动偏移坐标，偏移后的坐标为高德坐标，默认：true      //显示定位按钮，默认：true   //定位按钮停靠位置，默认：'LB'，左下角
-          buttonOffset: new AMap.Pixel(10, 20), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
-          showMarker: true, //定位成功后在定位到的位置显示点标记，默认：true      //定位成功后用圆圈表示定位精度范围，默认：true
-          panToLocation: true, //定位成功后将定位到的位置作为地图中心点，默认：true
-          zoomToAccuracy: true
-        });
-        map.addControl(geolocation);
-        geolocation.getCurrentPosition();
-        AMap.event.addListener(geolocation, "complete", onComplete); //返回定位信息
-        AMap.event.addListener(geolocation, "error", onError); //返回定位出错信息
-        function onComplete(data) {
-          //console.log(data);
-          map.add(that.getMarker(data.position.lat, data.position.lng));
-        }
-
-        function onError(data) {
-          //console.log(data);
-        }
-      });
-      //console.log(map.getCenter());
-      //解析定位错误信息
-    },
-    getMarker(lat, lng) {
-      var marker = new AMap.Marker({
-        icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_bs.png",
+    var that = this;
+    this.getLatLng().then(longs=>{
+         var lng = longs.data.driver_longitude;
+    var lat = longs.data.driver_latitude;
+    var marker_my = '';
+    
+    var map = new AMap.Map("container", {
+      zoom: 15, //设置地图显示的缩放级别
+      center: [lng, lat] //设置地图中心点坐标
+    });
+    
+    var marker_sj = new AMap.Marker({
+        icon: "http://zhangdj.yxsoft.net/assets/we.png",
         offset: new AMap.Pixel(-10, -10),
-        position: new AMap.LngLat(lng, lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+        position: new AMap.LngLat(lng,lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+        title: "司机当前位置"
+      });
+      map.add(marker_sj);
+    map.plugin("AMap.Geolocation", function() {
+      var geolocation = new AMap.Geolocation({
+        // 是否使用高精度定位，默认：true
+        enableHighAccuracy: true,
+        // 设置定位超时时间，默认：无穷大
+        timeout: 10000,
+        // 定位按钮的停靠位置的偏移量，默认：Pixel(10, 20)
+        buttonOffset: new AMap.Pixel(10, 20),
+        //  定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+        zoomToAccuracy: true,
+        //  定位按钮的排放位置,  RB表示右下
+        buttonPosition: "RB"
+      });
+
+      geolocation.getCurrentPosition();
+      AMap.event.addListener(geolocation, "complete", onComplete);
+      AMap.event.addListener(geolocation, "error", onError);
+
+      function onComplete(data) {
+        var marker_my = new AMap.Marker({
+        icon: "http://zhangdj.yxsoft.net/assets/my.png",
+        offset: new AMap.Pixel(-10, -10),
+        position: new AMap.LngLat(data.position.lng, data.position.lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
         title: "我的位置"
       });
-      return marker;
+        map.add(marker_my);
+        var lnglat = new AMap.LngLat(data.position.lng,data.position.lat);
+        marker_my.moveTo(lnglat,500,(k)=>{
+          return k
+    })
+      }
+
+      function onError(data) {
+        // 定位出错
+      }
+    });
+    setInterval(()=>{
+      this.getLatLng().then(res=>{
+        var lnglat = new AMap.LngLat(res.data.driver_longitude,res.data.driver_latitude);
+        marker_sj.moveTo(lnglat,500,(k)=>{
+          return k
+    })
+      })
+    
+    },10000)
+    
+    })
+   
+  },
+  created() {
+    this.getUserInfo();
+  },
+  methods: {
+    cancel() {
+      this.$router.push('pail')
+    },
+    navgateChange(url){
+      this.$router.push(url);
+    },
+    navgateTo(url) {
+      this.setUserInfo();
+      this.$router.push(url);
+    },
+    setUserInfo() {
+      localStorage.setItem("driver", this.driver.realname);
+      localStorage.setItem("uid", this.driver.uid);
+    },
+    getUserInfo() {
+      this.$postAjax("/api/user/getUserInfo", { obj_uid: 3 }).then(res => {
+        console.log(res);
+        this.driver = res.data;
+      });
+    },
+    getLatLng(){
+      return new Promise((reslove,reject)=>{
+        this.$postAjax('/api/trip/tripInfo',{trip_id:localStorage.getItem('trip_id')})
+      .then(res=>{
+          reslove(res);
+      })
+      })
+      
     }
   }
 };
 </script>
 <style scoped="">
-.name{
-    font-size:.373333rem;
-font-family:PingFang-SC-Heavy;
-font-weight:800;
-color:rgba(51,51,51,1);
-
+.change{
+  position: fixed;
+  bottom: 5rem;
+  right: 0.5rem;
+  background-color: white;
+  width: 0.8rem;
+  height: 0.8rem;
+  /* border-radius:50%;  */
+  text-align: center;
 }
-.xinxing{
-    width: .453333rem;
-    height: .453333rem;
-    font-size:.293333rem;
-font-family:ArialMT;
-font-weight:400;
-color:rgba(51,51,51,1);
+.name {
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Heavy;
+  font-weight: 800;
+  color: rgba(51, 51, 51, 1);
+}
+.xinxing {
+  width: 0.453333rem;
+  height: 0.453333rem;
+  font-size: 0.293333rem;
+  font-family: ArialMT;
+  font-weight: 400;
+  color: rgba(51, 51, 51, 1);
 }
 #container {
   width: 100%;
@@ -103,8 +172,8 @@ color:rgba(51,51,51,1);
   position: absolute;
 }
 
-.mlf{
-    margin-left: 0.1rem;
+.mlf {
+  margin-left: 0.1rem;
 }
 
 .bottom {
@@ -136,77 +205,77 @@ color:rgba(51,51,51,1);
   color: rgba(153, 153, 153, 1);
 }
 
-.moren{
-    width: 1.306667rem;
-    height: 1.306667rem;
+.moren {
+  width: 1.306667rem;
+  height: 1.306667rem;
 }
 .amap-icon {
   z-index: 99999 !important;
 }
 
-.form{
-    width: 6.5rem;
-    margin: 0 auto;
+.form {
+  width: 6.5rem;
+  margin: 0 auto;
 }
 
-.sure{
-    font-size:.373333rem;
-font-family:PingFang-SC-Medium;
-font-weight:500;
-color:rgba(255,255,255,1);
-    border: none;
-    outline: none;
-    width:2.666667rem;
-height:1.066667rem;
-background:#48CBB7;
-border-radius:.133333rem;
+.sure {
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  border: none;
+  outline: none;
+  width: 2.666667rem;
+  height: 1.066667rem;
+  background: #48cbb7;
+  border-radius: 0.133333rem;
 }
 
-.quxiao{
-    font-size:.373333rem;
-font-family:PingFang-SC-Medium;
-font-weight:500;
-color:rgba(255,255,255,1);
-    border: none;
-    outline: none;
-    width:2.666667rem;
-height:1.066667rem;
-background:#48CBB7;
-border-radius:.133333rem;
+.quxiao {
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  border: none;
+  outline: none;
+  width: 2.666667rem;
+  height: 1.066667rem;
+  background: #48cbb7;
+  border-radius: 0.133333rem;
 }
 
-.lin{
-    padding-top: .153333rem;
-    clear: both;
-    font-size:.32rem;
-font-family:PingFang-SC-Medium;
-font-weight:500;
-color:rgba(153,153,153,1);
+.lin {
+  padding-top: 0.153333rem;
+  clear: both;
+  font-size: 0.32rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: rgba(153, 153, 153, 1);
 }
 
-.line{
-    width: .96rem;
-    height: .96rem;
+.line {
+  width: 0.96rem;
+  height: 0.96rem;
 }
 
-.mobile{
-    width: .96rem;
-    height: .96rem;
-    margin-left: .253333rem;
+.mobile {
+  width: 0.96rem;
+  height: 0.96rem;
+  margin-left: 0.253333rem;
 }
 
-.mag{
-    margin-top: .413333rem;
-    height: 1.5rem;
+.mag {
+  margin-top: 0.413333rem;
+  height: 1.5rem;
 }
 
-.pj{
-    margin-left: .166667rem;
+.pj {
+  margin-left: 0.166667rem;
 }
 
-.pj img{
-    position: relative;
-    top: 0.05rem;
+.pj img {
+  position: relative;
+  top: 0.05rem;
 }
 </style>
 

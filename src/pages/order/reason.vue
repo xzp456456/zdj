@@ -8,12 +8,16 @@
         <div class="row">{{item.reason}}</div>
       </div>
     </div>
+    <div class="text row">其他</div>
+    <div class="othe row">
+      <textarea class="desc" v-model="reason_other"></textarea>
+    </div>
     <div class="bottom">
       <div class="btn">
-        <v-button>提交</v-button>
+        <v-button @actionClick="formReason()">提交</v-button>
       </div>
       <div class="btn">
-        <v-button myclass="bgcolor">返回</v-button>
+        <v-button myclass="bgcolor" @actionClick="navgateTo('/')">返回</v-button>
       </div>
     </div>
   </div>
@@ -25,7 +29,8 @@ export default {
     return{
       reason:[],
       activeIndex:0,
-      reason_id:''
+      reason_id:'',
+      reason_other:''
     }
   },
   created(){
@@ -43,10 +48,28 @@ export default {
         this.reason = res.data;
       })
     },
-    formReason(trip_id,reason_id,reason_other){
-      this.$postAjax('/api/trip/tripCancelReasonSubmit',{trip_id,reason_id,reason_other})
+    navgateTo(url){
+      this.$router.push(url)
+    },
+    formReason(){
+      let data = {trip_id:localStorage.getItem('trip_id'),reason_id:this.reason_id,reason_other:this.reason_other}
+      this.$postAjax('/api/trip/tripCancelReasonSubmit',data)
       .then(res=>{
-        //console.log(res);
+          if(res.status){
+             this.Toast({
+            message: res.msg,
+            duration:1000
+          })
+          localStorage.removeItem('kongkai_id');
+         setTimeout(()=>{
+            this.$router.push('cancelSure')
+         },1000)
+          }else{
+             this.Toast({
+            message: res.msg,
+            duration:1000
+          })
+          }
       })
     }
   },
@@ -56,6 +79,26 @@ export default {
 };
 </script>
 <style scoped="">
+.text{
+  height: 1rem;
+  line-height: 1rem;
+  font-size:.373333rem;
+font-family:PingFang-SC-Medium;
+font-weight:500;
+color:rgba(51,51,51,1);
+}
+.desc{
+  width:100%;
+height:1.906667rem;
+border:2px solid rgba(221,221,221,1);
+opacity:0.4;
+border-radius:.133333rem;
+  resize: none;
+}
+.othe{
+  margin-top: 0.1rem;
+}
+
 .title {
   height: 1.333333rem;
   font-size: 0.373333rem;

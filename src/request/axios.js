@@ -3,6 +3,7 @@ import qs from 'qs'
 import { Indicator } from 'mint-ui';
 import md5 from 'js-md5'
 import router from '../router/index'
+import {Toast} from 'mint-ui'
 //axios.defaults.baseURL = process.env.HTTP_URL;
 //axios.defaults.baseURL = '/api';
 import cryptoJS from 'crypto-js'
@@ -97,6 +98,7 @@ export const getAjax = (url, param) => {
                     'access-token':localStorage.getItem('token')
                 }
             }).then((res) => {
+               
             resolve(res.data);
         }).catch((err) => {
             reject(err);
@@ -129,7 +131,13 @@ export const postAjax = (url, param) => {
                 'signature':'123456'
             }
         }).then((res) => {
-           
+            if(res.data.status==-10086){
+                Toast({
+                    message: res.data.msg,
+                   duration:1000
+                 })
+                localStorage.removeItem('access_token');
+            }
             resolve(res.data);
         }).catch((err) => {
             reject(err);
@@ -142,6 +150,7 @@ export const postFileUp = (url, param) => {
         axios.post(url,param, {
             headers: {
                 'Content-Type': 'multipart/form-data',
+                'device-os':'wap',
                 'access-token':localStorage.getItem('access_token'),
                 'signature':'123456'
             }

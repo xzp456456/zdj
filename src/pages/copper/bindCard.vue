@@ -3,11 +3,11 @@
     <div class="item">
       <div class="row mk">
         <label for>持卡人：</label>
-        <input type="text" class="form" placeholder="请输入持卡人姓名">
+        <input type="text" class="form"  v-model="bank_username" placeholder="请输入持卡人姓名">
       </div>
       <div class="row mk">
         <label for>银行卡号：</label>
-        <input type="text" class="form" placeholder="请输入银行卡号">
+        <input type="text" class="form" v-model="bank_card_number" placeholder="请输入银行卡号">
       </div>
       <div class="row mk" id="singleLinePicker">
         <label for>银行名称：</label>
@@ -19,19 +19,28 @@
           @click="getPicker()"
         >
       </div>
-      <div class="row mk">
+      <div class="row mk" id="singleLinePicker">
+        <label for>开户行：</label>
+        <input
+          type="text"
+          class="form"
+          placeholder="请输入开户行名称"
+          v-model="bank_open"
+        >
+      </div>
+      <!-- <div class="row mk">
         <label for>预留号码：</label>
         <input type="text" class="form" placeholder="请输入预留号码">
       </div>
       <div class="row mk">
         <label for>验证码：</label>
         <input type="text" class="code" placeholder="请输入验证码">
-        <button class="getcode">获取验证码</button>
-      </div>
+        <button class="getcode" :disabled="disabled"   @click="getCode()" >获取验证码</button>
+      </div> -->
     </div>
     <div class="btns">
       <div class="btn">
-        <v-button>提交</v-button>
+        <v-button @actionClick="changBindCard()">提交</v-button>
       </div>
     </div>
   </div>
@@ -42,18 +51,48 @@ export default {
   data() {
     return {
       idCardName: [],
-      info: {}
+      info: {},
+      codeText:'',
+      disabled:false,
+       bank_username:'',
+      bank_card_number:'',
+      bank_name:'',
+      bank_open:''
     };
   },
   created() {
     this.getIdCardName();
   },
   methods: {
-    // {
-    //     label: '飞机票',
-    //     value: 0,
-    //     disabled: true // 不可用
-    // }
+     getTime(time) {
+      var timeFun = setInterval(() => {
+        time--;
+        this.codeText = "重新发送(" + time + ")";
+        this.disabled = true;
+        if (time < 0) {
+          clearInterval(timeFun);
+          this.codeText = "重新发送";
+          this.disabled = false;
+        }
+      }, 1000);
+    },
+    getCode() {
+      let data = { type: "bind_mobile", account: this.alipay_account };
+      this.$postAjax("/api/code/sendCode", data).then(res => {
+        if (res.status) {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          });
+          this.getTime(60);
+        } else {
+          this.Toast({
+            message: res.msg,
+            duration:1000
+          })
+        }
+      });
+    },
     getIdCardName() {
       this.$postAjax("/api/index/getBankList", {}).then(res => {
         let item = res.data.list;
@@ -75,6 +114,31 @@ export default {
         },
         id: "singleLinePicker"
       });
+    },
+    changBindCard(){
+      let data = { 
+      bank_username:this.bank_username,
+      bank_card_number:this.bank_card_number,
+      bank_name:this.info.cardName,
+      bank_open:this.bank_open
+      }
+      this.$postAjax('/api/user/updateInfo',data)
+      .then(res=>{
+        if(res.status){
+            this.Toast({
+             message: res.msg,
+            duration:1000
+          })
+          setTimeout(()=>{
+            this.$router.push('advance');
+          },1000)
+        }else{
+            this.Toast({
+             message: res.msg,
+            duration:1000
+          })
+        }
+      })
     }
   },
   components: {

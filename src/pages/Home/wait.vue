@@ -8,42 +8,184 @@
     </div>
 
     <div class="bottom">
-      <div class="or">已等待 00 : 04</div>
+      <!-- <div class="or">已等待 00 : 04</div> -->
+      <div class="or">已等待 {{createTripWaitTime}}s</div>
       <div class="wait">正在为您寻找司机，请耐心等待</div>
       <v-button myclass="wid"  v-if="wait==0" @actionClick="cancel()">取消代驾</v-button>
      <div class="form" v-if="wait==1">
          <button class="quxiao left" @click="select(0)">继续等待</button>
-         <button class="sure right" >同意加价</button>
+         <button class="sure right" @click="addMoney()">同意加价</button>
      </div>
     </div>
   </div>
 </template>
 <script>
 import Button from "@/components/Button";
+import {IM} from '@/util/public'
 export default {
     data(){
         return{
-            wait:0
+            wait:0,
+            createTripWaitTime:0,
+            waitTime:'',
+            d1:'',
+            d2:''
         }
+    },
+    created(){
+    this.waitTime =  setInterval(()=>{
+        this.waitOrderInfo();
+      },1000)
+    },
+    destroyed(){
+      clearInterval(this.waitTime)
     },
   components: {
     "v-button": Button
   },
   mounted() {
     this.getMap();
+    var that = this;
+      RongIMLib.RongIMClient.init('25wehl3u2g0qw');
+        RongIMClient.setConnectionStatusListener({
+       onChanged: function (status) {
+           // status 标识当前连接状态
+           console.log(status);
+           switch (status) {
+               case RongIMLib.ConnectionStatus.CONNECTED:
+                   console.log('链接成功');
+                   break;
+               case RongIMLib.ConnectionStatus.CONNECTING:
+                   console.log('正在链接');
+                   break;
+               case RongIMLib.ConnectionStatus.DISCONNECTED:
+                   console.log('断开连接');
+                   break;
+               case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
+                   console.log('其他设备登录');
+                   break;
+               case RongIMLib.ConnectionStatus.DOMAIN_INCORRECT:
+                   console.log('域名不正确');
+                   break;
+               case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
+                   console.log('网络不可用');
+                   break;
+           }
+       }
+   });
+   RongIMClient.setOnReceiveMessageListener({
+       // 接收到的消息
+       onReceived: function (message) {
+           // 判断消息类型
+           console.log(message);
+           if(message.content.content==1){
+              that.Toast({
+             message: '接单成功',
+            duration:1000
+          })
+          that.$router.push('success');
+           }
+          
+           switch(message.messageType){
+               case RongIMClient.MessageType.TextMessage:
+                   // message.content.content => 文字内容
+                   break;
+               case RongIMClient.MessageType.VoiceMessage:
+                   // message.content.content => 格式为 AMR 的音频 base64
+                   break;
+               case RongIMClient.MessageType.ImageMessage:
+                   // message.content.content => 图片缩略图 base64
+                   // message.content.imageUri => 原图 URL
+                   break;
+               case RongIMClient.MessageType.LocationMessage:
+                   // message.content.latiude => 纬度
+                   // message.content.longitude => 经度
+                   // message.content.content => 位置图片 base64
+                   break;
+               case RongIMClient.MessageType.RichContentMessage:
+                   // message.content.content => 文本消息内容
+                   // message.content.imageUri => 图片 base64
+                   // message.content.url => 原图 URL
+                   break;
+               case RongIMClient.MessageType.InformationNotificationMessage:
+                   // do something
+                   break;
+               case RongIMClient.MessageType.ContactNotificationMessage:
+                   // do something
+                   break;
+               case RongIMClient.MessageType.ProfileNotificationMessage:
+                   // do something
+                   break;
+               case RongIMClient.MessageType.CommandNotificationMessage:
+                   // do something
+                   break;
+               case RongIMClient.MessageType.CommandMessage:
+                   // do something
+                   break;
+               case RongIMClient.MessageType.UnknownMessage:
+                   // do something
+                   break;
+               default:
+                   // do something
+           }
+       }
+   });
+   var token = "KpLfxv0ii6i4LpT34FvJWHEi7gh5yeGnVZdMnog2g59Y1NS5f7MGzKq5Kl37C/WFYroT+lCAjS9bWkVuwG4kkg==";
+   
+   RongIMClient.connect(token, {
+       onSuccess: function(userId) {
+           console.log('Connect successfully. ' + userId);
+       },
+       onTokenIncorrect: function() {
+           //console.log('token 无效');
+       },
+       onError: function(errorCode){
+           var info = '';
+           switch (errorCode) {
+               case RongIMLib.ErrorCode.TIMEOUT:
+                   info = '超时';
+                   break;
+               case RongIMLib.ConnectionState.UNACCEPTABLE_PAROTOCOL_VERSION:
+                   info = '不可接受的协议版本';
+                   break;
+               case RongIMLib.ConnectionState.IDENTIFIER_REJECTED:
+                   info = 'appkey不正确';
+                   break;
+               case RongIMLib.ConnectionState.SERVER_UNAVAILABLE:
+                   info = '服务器不可用';
+                   break;
+           }
+           //console.log(info);
+       }
+   });
+   var callback = {
+       onSuccess: function(userId) {
+           console.log('Reconnect successfully. ' + userId);
+       },
+       onTokenIncorrect: function() {
+           console.log('token无效');
+       },
+       onError: function(errorCode){
+           console.log(errorcode);
+       }
+   };
+   var config = {
+       // 默认 false, true 启用自动重连，启用则为必选参数
+       auto: true,
+       // 网络嗅探地址 [http(s)://]cdn.ronghub.com/RongIMLib-2.2.6.min.js 可选
+       url: 'cdn.ronghub.com/RongIMLib-2.2.6.min.js',
+       // 重试频率 [100, 1000, 3000, 6000, 10000, 18000] 单位为毫秒，可选
+       rate: [100, 1000, 3000, 6000, 10000]
+   };
+   RongIMClient.reconnect(callback, config);
+
   },
   methods: {
     select(wait){
-        this.wait =wait;
+        this.wait = wait;
     },
     cancel(){
-      let data = {
-        trip_id:localStorage.getItem('trip_id')
-      }
-      this.$postAjax('/api/trip/cancelTrip',data)
-      .then(res=>{
-        //console.log(res);
-      })
+      this.navgateTo('pail')
     },
     navgateTo(url) {
       this.$router.push(url);
@@ -56,11 +198,10 @@ export default {
       map.plugin("AMap.Geolocation", function() {
         var geolocation = new AMap.Geolocation({
           enableHighAccuracy: true, //是否使用高精度定位，默认:true
-          timeout: 10000, //超过10秒后停止定位，默认：无穷大
           maximumAge: 0, //定位结果缓存0毫秒，默认：0
           convert: true, //自动偏移坐标，偏移后的坐标为高德坐标，默认：true      //显示定位按钮，默认：true   //定位按钮停靠位置，默认：'LB'，左下角
-          buttonOffset: new AMap.Pixel(10, 20), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
-          showMarker: true, //定位成功后在定位到的位置显示点标记，默认：true      //定位成功后用圆圈表示定位精度范围，默认：true
+          buttonOffset: new AMap.Pixel(-10, -10), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+          showMarker: false, //定位成功后在定位到的位置显示点标记，默认：true      //定位成功后用圆圈表示定位精度范围，默认：true
           panToLocation: true, //定位成功后将定位到的位置作为地图中心点，默认：true
           zoomToAccuracy: true
         });
@@ -82,12 +223,48 @@ export default {
     },
     getMarker(lat, lng) {
       var marker = new AMap.Marker({
-        icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_bs.png",
+        icon: "http://zhangdj.yxsoft.net/assets/my.png",
         offset: new AMap.Pixel(-10, -10),
         position: new AMap.LngLat(lng, lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
         title: "我的位置"
       });
       return marker;
+    },
+    waitOrderInfo(){
+      this.$postAjax('/api/trip/waitOrderInfo',{trip_id:localStorage.getItem('trip_id')})
+      .then(res=>{
+        if(this.is_close==1){
+          this.$router.push('cancel');
+        }
+        this.createTripWaitTime = res.data.createTripWaitTime;
+        this.is_close = res.data.is_close;
+       
+        this.remind_add_price = res.data.remind_add_price;
+
+         if(this.remind_add_price==1){
+          this.wait = 1;
+          
+        }else{
+          this.wait = 0;
+        }
+      })
+    },
+    addMoney(){
+      this.$postAjax('/api/trip/addPriceTrip',{trip_id:localStorage.getItem('trip_id')})
+      .then(res=>{
+        if(res.status){
+          this.wait = 0;
+           this.Toast({
+            message: res.msg,
+            duration: 1000
+          });
+        }else{
+           this.Toast({
+            message: res.msg,
+            duration: 1000
+          });
+        }
+      })
     }
   }
 };

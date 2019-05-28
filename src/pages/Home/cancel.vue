@@ -7,7 +7,7 @@
     <div class="bottom">
       <div class="row">
         <div class="btn">
-          <v-button>确定</v-button>
+          <v-button @actionClick="navgateTo('/')">确定</v-button>
         </div>
       </div>
     </div>
@@ -16,6 +16,11 @@
 <script>
 import Button from "@/components/Button";
 export default {
+  methods:{
+    navgateTo(url){
+      this.$router.push(url)
+    }
+  },
   components: {
     "v-button": Button
   }

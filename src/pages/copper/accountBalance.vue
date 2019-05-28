@@ -12,16 +12,16 @@
       <div class="list">
         <div class="row text">交易明细</div>
       </div>
-      <div class="list">
+      <div class="list" v-for="(item,index) in list" :key="index">
         <div class="row">
           <div class="left">
-            <div class="text textview">充值</div>
-            <div class="time">2018-04-06 08:02:23</div>
+            <div class="text textview">{{item.fina_action_desc}}</div>
+            <div class="time">{{item.on_time}}</div>
           </div>
-          <div class="right add">+100.00元</div>
+          <div class="right add">{{item.fina_type=='in'?'+':'-'}}{{item.fina_cash}}元</div>
         </div>
       </div>
-       <div class="list">
+       <!-- <div class="list">
         <div class="row">
           <div class="left">
             <div class="text textview">接单消费</div>
@@ -29,13 +29,13 @@
           </div>
           <div class="right add">-100.00元</div>
         </div>
-      </div>
+      </div> -->
       <div class="more">
           暂无更多明细
       </div>
     </div>
     <div class="getMoney">
-        <v-button>提现</v-button>
+        <v-button @actionClick="navgateTo('advance')">提现</v-button>
     </div>
   </div>
 </template>
@@ -44,11 +44,13 @@ import Button from '@/components/Button'
 export default {
   data(){
     return{
-      info:{}
+      info:{},
+      list:[]
     }
   },
   created(){
     this.getUserInfo();
+    this.getList();
   },
   methods:{
     getUserInfo(){
@@ -60,6 +62,13 @@ export default {
     },
     navgateTo(url){
     this.$router.push(url)
+  },
+  getList(){
+    let data = {page:this.page,page_size:this.page_size}
+    this.$postAjax('/api/finance/tradeList',data)
+    .then(res=>{
+      this.list = res.data.list;
+    })
   }
   },
   
@@ -172,6 +181,7 @@ background:rgba(221,221,221,0.4);
 }
 
 .getMoney{
-    margin-top: 4rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
 }
 </style>

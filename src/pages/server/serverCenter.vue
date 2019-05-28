@@ -23,7 +23,7 @@
         <span>代驾出发地:{{list[0].destination_name}}</span>
       </div>
       <div class="ab">
-        <button @click="navgateTo('appeal')">我要投诉</button>
+        <button @click="navgateTo('appeal',id)">我要投诉</button>
       </div>
     </div>
     </div>
@@ -33,7 +33,7 @@
         <span class="left on">投诉反馈</span>
       </div>
     </div>
-    <div class="order" style="border:none">
+    <div class="order" style="border:none" @click="navgateTo('messageCenter')">
       <div class="row">
         <span class="left on">
           <img class="sl" src="@/assets/sl.png" alt srcset> 投诉进度
@@ -51,49 +51,24 @@
       </div>
     </div>
     <div class="iger">
-      <div class="main">
+      <div class="main" v-for="(item,index) in problem" :key="index">
         <div class="row">
           <div class="left user">
             <img class="yh" src="@/assets/yh.png" alt srcset>
-            <div class="account">账号使用</div>
-            <img class="xia" src="@/assets/xiajiantou.png" alt srcset>
+            <div class="account">{{item.cate_name}}</div>
+            <img  src="@/assets/xiajiantou.png" :class="indexImg[index]==1?'up xia':'xia'" @click="showDiv('show'+index,index)"  alt srcset>
           </div>
-          <div class="left">
-            <div class="rh">如何取消订单</div>
-            <div class="ck">查看订单记录</div>
-          </div>
-        </div>
-      </div>
-      <div class="main">
-        <div class="row">
-          <div class="left user">
-            <img class="yh" src="@/assets/yh.png" alt srcset>
-            <div class="account">账号使用</div>
-            <img class="xia" src="@/assets/xiajiantou.png" alt srcset>
-          </div>
-          <div class="left">
-            <div class="rh">如何取消订单</div>
-            <div class="ck">查看订单记录</div>
+          <div class="left disn">
+            <div class="rh" v-for="(list,i) in item.faq"  :class="item.faq.length==1?'mag':''"  v-show="i<2" :ref="'show'+index" :key="i">{{list.answer}}</div>
+
           </div>
         </div>
       </div>
-      <div class="main">
-        <div class="row">
-          <div class="left user">
-            <img class="yh" src="@/assets/yh.png" alt srcset>
-            <div class="account">账号使用</div>
-            <img class="xia" src="@/assets/xiajiantou.png" alt srcset>
-          </div>
-          <div class="left">
-            <div class="rh">如何取消订单</div>
-            <div class="ck">查看订单记录</div>
-          </div>
-        </div>
-      </div>
+    
     </div>
     <div class="row we">
-      <button class="phone left">电话客服</button>
-      <button class="line right">在线客服</button>
+     <a :href="'tel:'+info.service_tel"><button class="phone left">电话客服</button></a>
+      <button class="line right" @click="navgateTo('serverUser')">在线客服</button>
     </div>
   </div>
 </template>
@@ -101,15 +76,25 @@
 export default {
   data(){
     return{
-      list:[]
+      list:[{}],
+      info:{},
+      problem:[],
+      length:'',
+      indexImg:[]
     }
   },
   created(){
-    this.getOrder()
+    this.getOrder();
+    this. getProblem();
+    
+  },
+  mounted(){
+    console.log(this.$refs)
   },
   methods:{
-    navgateTo(url){
-      this.$router.push(url)
+    navgateTo(url,id){
+      this.$router.push(url);
+      localStorage.setItem('trip_id_ts',id)
     },
     getOrder(){
       let data = {
@@ -119,15 +104,58 @@ export default {
       this.$postAjax('/api/trip/getMyList',data)
       .then(res=>{
         this.list = res.data.list;
+
       })
+    },
+    getMsgIndex(){
+      this.$postAjax('/api/index/index',{})
+      .then(res=>{
+        this.info = res.data;
+      })
+    },
+    getProblem(){
+      this.$postAjax('/api/faq/getList',{})
+      .then(res=>{
+        console.log(res)
+        this.problem = res.data;
+        this.problem.forEach((item,index)=>{
+          this.indexImg[index] = 0; 
+        })
+        
+      })
+    },
+    showDiv(ref,index){
+      if(this.indexImg[index] == 0){
+        this.indexImg[index] = 1;
+      }else{
+        this.indexImg[index] = 0;
+      }
+      console.log( this.indexImg)
+      var id = this.$refs[ref];
+      id.forEach((item,index)=>{
+        if(index>1){
+          if(this.$refs[ref][index].style.display=='none'){
+            this.$refs[ref][index].style.display='block';
+          }else{
+            this.$refs[ref][index].style.display='none';
+          }
+          
+        }
+      })
+      
     }
   }
 };
 </script>
 <style scoped="">
+.mag{
+  margin-top: 0.6rem
+}
 .we {
-  margin-top: 0.5rem;
+  padding-top: 0.5rem;
   margin-bottom: 2rem;
+   border-top: 1px solid #dddddd;
+  clear: both;
 }
 .phone {
   width: 4.266667rem;
@@ -165,7 +193,7 @@ export default {
 
 .main {
   border-bottom: 1px solid #dddddd;
-  height: 2.4rem;
+  clear: both;
 }
 
 .user {
@@ -173,8 +201,7 @@ export default {
   width: 2rem;
   text-align: center;
   font-size: 0.373333rem;
-  height: 1.653333rem;
-  border-right: 1px solid #dddddd;
+  height: 2.153333rem;
 }
 
 .ck {
@@ -197,7 +224,16 @@ export default {
   font-family: PingFang-SC-Medium;
   font-weight: 500;
   color: rgba(51, 51, 51, 1);
-  border-bottom: 1px solid #dddddd;
+  border-top: 1px solid #dddddd;
+  border-left:1px solid #dddddd;
+}
+
+.rh:first-child{
+   border-top:none;
+}
+
+.disn{
+  display: inline-block;
 }
 
 .account {
@@ -286,9 +322,13 @@ export default {
 }
 
 .order {
-  border-bottom: 1px solid #dddddd;
+  /* border-bottom: 1px solid #dddddd; */
   width: 100%;
   height: 1.333333rem;
   line-height: 1.333333rem;
+}
+
+.up{
+  transform: rotate(180deg) !important;
 }
 </style>

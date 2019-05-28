@@ -46,6 +46,7 @@ export default {
             message: res.msg,
             duration:1000
           });
+         
         } else {
           this.Toast({
             message: res.msg,

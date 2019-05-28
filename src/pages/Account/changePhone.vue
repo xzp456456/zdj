@@ -41,6 +41,9 @@ export default {
             message: res.msg,
             duration:1000
           });
+          setTimeout(()=>{
+            this.$router.push('accountSecurity');
+          })
         } else {
           this.Toast({
             message: res.msg,

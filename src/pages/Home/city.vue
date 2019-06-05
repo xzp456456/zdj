@@ -3,7 +3,7 @@
     <div class="top">
       <div class="mode">
         <img class="search left" src="@/assets/search.png" alt>
-        <input type="text" class="left input" placeholder="中文/拼音/首字母">
+        <input type="text"   @click="navgateTo('underwayAddress')" class="left input" placeholder="中文/拼音/首字母">
         <div class="quxiao left" @click="navgateTo('address')">取消</div>
       </div>
     </div>
@@ -16,7 +16,14 @@
     <div class="now">热门城市</div>
     <div class="all">
         <ul>
-            <li v-for="(item,index) in city" :key="index">{{item.province}}</li>
+            <li>北京</li>
+            <li>上海</li>
+            <li>广州</li>
+            <li>深圳</li>
+            <li>青岛</li>
+            <li>沈阳</li>
+            <li>济南</li>
+            <li>郑州</li>
         </ul>
     </div>
     <div class="now">a</div>

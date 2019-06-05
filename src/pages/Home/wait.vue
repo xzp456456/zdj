@@ -1,11 +1,11 @@
 <template>
   <div class="map">
     <div id="container"></div>
-    <div class="kk1">
+    <!-- <div class="kk1">
       <div class="kk2">
         <div class="kk3"></div>
       </div>
-    </div>
+    </div> -->
 
     <div class="bottom">
       <!-- <div class="or">已等待 00 : 04</div> -->
@@ -38,12 +38,17 @@ export default {
       },1000)
     },
     destroyed(){
-      clearInterval(this.waitTime)
+      clearInterval(this.waitTime);
+      sessionStorage.removeItem('contunte')
     },
   components: {
     "v-button": Button
   },
   mounted() {
+    this.getOldTime()
+    .then(res=>{
+      this.setTimeInit()
+    })
     this.getMap();
     var that = this;
       RongIMLib.RongIMClient.init('25wehl3u2g0qw');
@@ -78,12 +83,12 @@ export default {
        onReceived: function (message) {
            // 判断消息类型
            console.log(message);
-           if(message.content.content==1){
+          if(message.content.extra=='DriverTakeOrder'){
               that.Toast({
-             message: '接单成功',
+             message: '司机接到乘客',
             duration:1000
           })
-          that.$router.push('success');
+          that.$router.replace('success');
            }
           
            switch(message.messageType){
@@ -130,7 +135,7 @@ export default {
            }
        }
    });
-   var token = "KpLfxv0ii6i4LpT34FvJWHEi7gh5yeGnVZdMnog2g59Y1NS5f7MGzKq5Kl37C/WFYroT+lCAjS9bWkVuwG4kkg==";
+   var token = localStorage.getItem('im_token');
    
    RongIMClient.connect(token, {
        onSuccess: function(userId) {
@@ -183,6 +188,7 @@ export default {
   methods: {
     select(wait){
         this.wait = wait;
+        sessionStorage.setItem('contunte',1);
     },
     cancel(){
       this.navgateTo('pail')
@@ -223,31 +229,56 @@ export default {
     },
     getMarker(lat, lng) {
       var marker = new AMap.Marker({
-        icon: "http://zhangdj.yxsoft.net/assets/my.png",
-        offset: new AMap.Pixel(-10, -10),
+        icon:new AMap.Icon({            
+            image:"http://zhangdj.yxsoft.net/assets/my.png",
+            size:new AMap.Size(47, 61),  //图标大小
+            imageSize: new AMap.Size(47,61)
+        }), 
+        offset: new AMap.Pixel(-20, -40),
         position: new AMap.LngLat(lng, lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
         title: "我的位置"
       });
+       marker.setLabel({
+            offset: new AMap.Pixel(10, 0),  //设置文本标注偏移量
+            content: "<div class='info'>我的位置</div>", //设置文本标注内容
+            direction: 'top' //设置文本标注方位
+        });
       return marker;
     },
     waitOrderInfo(){
       this.$postAjax('/api/trip/waitOrderInfo',{trip_id:localStorage.getItem('trip_id')})
       .then(res=>{
         if(this.is_close==1){
-          this.$router.push('cancel');
+          this.$router.replace('cancel');
         }
-        this.createTripWaitTime = res.data.createTripWaitTime;
+        //this.createTripWaitTime = res.data.createTripWaitTime;
         this.is_close = res.data.is_close;
-       
-        this.remind_add_price = res.data.remind_add_price;
-
-         if(this.remind_add_price==1){
+          this.remind_add_price = res.data.remind_add_price;
+           if(this.remind_add_price==1){
+             if(!sessionStorage.getItem('contunte')){
           this.wait = 1;
-          
+             }else{
+                this.wait = 0;
+             }
         }else{
           this.wait = 0;
         }
       })
+    },
+    getOldTime(){
+      return new Promise((reslove,reject)=>{
+        this.$postAjax('/api/trip/waitOrderInfo',{trip_id:localStorage.getItem('trip_id')})
+      .then(res=>{
+        this.createTripWaitTime = res.data.createTripWaitTime;
+        reslove(res)
+      })
+      })
+      
+    },
+    setTimeInit(){
+      setInterval(()=>{
+        this.createTripWaitTime=this.createTripWaitTime+1;
+      },1000)
     },
     addMoney(){
       this.$postAjax('/api/trip/addPriceTrip',{trip_id:localStorage.getItem('trip_id')})

@@ -38,7 +38,9 @@
       </div>
     </div>
     <div class="maker">
+      
       <div class="address">
+        <img class="diand" src="@/assets/weqw.png" alt="" srcset="">
         <input
           type="text"
           placeholder="请输入当前位置"
@@ -58,7 +60,7 @@
           <span>{{estimate_trip_price}}</span>元
           <img class="jt" src="@/assets/jt.png" alt srcset>
         </div>
-        <div class="yhz">优惠券已抵扣5.00元</div>
+        <div class="yhz">优惠券已抵扣{{discount}}元</div>
       </div>
       <div class="btn-pd">
         <v-button @actionClick="sure()">确认下单</v-button>
@@ -129,14 +131,19 @@ export default {
       origin_longitude: "",
       origin_latitude: "",
       estimate_trip_price: "",
-      priceShow: 0
+     discount:'',
+      priceShow: 0,
+      wx:{}
     };
   },
   created() {
+    this.recharge();
+    this.getWxInfo()
     Indicator.open({
       text: "加载中...",
       spinnerType: "fading-circle"
     });
+    
     this.index();
     this.getConfigByLngLat();
     this.getUserInfo();
@@ -155,7 +162,11 @@ export default {
     this.getOrderMeta();
   },
   mounted() {
-    var marker = "";
+   this.getMap()
+  },
+  methods: {
+    getMap(){
+       var marker = "";
     var that = this;
     var map = new AMap.Map("container", {
       resizeEnable: true
@@ -177,11 +188,21 @@ export default {
       function onComplete(data) {
         console.log(data);
         marker = new AMap.Marker({
-          icon: "http://zhangdj.yxsoft.net/assets/my.png",
-          offset: new AMap.Pixel(-10, -10),
+           icon:new AMap.Icon({            
+            image:"http://zhangdj.yxsoft.net/assets/my.png",
+            size:new AMap.Size(47, 61),  //图标大小
+            imageSize: new AMap.Size(47,61)
+        }), 
+          offset: new AMap.Pixel(-20, -40),
+           size: new AMap.Size(11,11),
           position: new AMap.LngLat(data.position.lng, data.position.lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
           title: "我的位置",
           draggable: true
+        });
+         marker.setLabel({
+            offset: new AMap.Pixel(10, 0),  //设置文本标注偏移量
+            content: "<div class='info'>我的位置</div>", //设置文本标注内容
+            direction: 'top' //设置文本标注方位
         });
         localStorage.setItem(
           "mylocation",
@@ -208,6 +229,9 @@ export default {
           that.origin_latitude = res.lnglat.lat;
           that.getAddressName(location).then(res => {
             that.origin_name = res.regeocode.formatted_address;
+             if (that.destination_name != "") {
+            that.estimateTripPrice()
+             }
           });
         });
         map.add(marker);
@@ -224,14 +248,61 @@ export default {
       }
 
       function onError(data) {
+        console.log(data);
         that.Toast({
           message: "定位失败",
           duration: 1000
         });
       }
     });
-  },
-  methods: {
+    },
+    recharge(){
+      this.$postAjax('/api/pay/recharge',{
+        amount:1,
+        pay_way:'jswxpay'
+      }).then(res=>{
+        if(res.status==10000){
+         // location.href = res.data.url;
+        }
+      })
+    },
+    getWxInfo(){
+      
+        let data = {url:location.href}
+      this.$postAjax('/api/wx_oauth/getWxInfo',data)
+      .then(res=>{
+        console.log(res);
+        this.wx = res.data;
+        this.getWxConfig(res.data.appId,res.data.timestamp,res.data.nonceStr,res.data.signature)
+      })
+  
+      
+    },
+    getWxConfig(appId,timestamp,nonceStr,signature){
+      var that = this;
+      console.log({appId,timestamp,nonceStr,signature})
+      wx.config({
+          debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+          appId: appId, // 必填，公众号的唯一标识
+          timestamp: timestamp, // 必填，生成签名的时间戳
+          nonceStr: nonceStr, // 必填，生成签名的随机串
+          signature: signature,// 必填，签名
+          jsApiList: ['getLocation','openLocation'] // 必填，需要使用的JS接口列表
+      });
+      wx.ready(function(){
+         wx.getLocation({
+            type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+            success: function (res) {
+              console.log(res)
+                var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                var longitude = res.longitude ; // 经度，浮点数，范围为180 ~ -180。
+                var speed = res.speed; // 速度，以米/每秒计
+                var accuracy = res.accuracy; // 位置精度
+                
+            }
+        });
+      });
+    },
     estimateTripPrice() {
       let data = {
         origin_longitude: this.origin_longitude,
@@ -243,6 +314,7 @@ export default {
         console.log(res);
         if (res.status) {
           this.estimate_trip_price = res.data.estimate_trip_price;
+          this.discount = res.data.discount
           this.priceShow = 1;
         } else {
           this.Toast({
@@ -286,12 +358,21 @@ export default {
     },
     getMaskerIcon(lng, lat) {
       var device = new AMap.Marker({
-        icon: "http://zhangdj.yxsoft.net/assets/we.png",
-        offset: new AMap.Pixel(-10, -10),
+         icon:new AMap.Icon({            
+            image:"http://zhangdj.yxsoft.net/assets/we.png",
+            size:new AMap.Size(47, 61),  //图标大小
+            imageSize: new AMap.Size(47,61)
+        }),      
+        offset: new AMap.Pixel(-20, -40),
         position: new AMap.LngLat(lng, lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
         title: "附近司机位置",
         draggable: false
       });
+       device.setLabel({
+            offset: new AMap.Pixel(10, 0),  //设置文本标注偏移量
+            content: "<div class='info'>附近司机位置</div>", //设置文本标注内容
+            direction: 'top' //设置文本标注方位
+        });
       return device;
     },
     getUserInfo() {
@@ -443,6 +524,13 @@ export default {
 };
 </script>
 <style scoped="">
+
+.diand{
+  width: .186667rem;
+  position: absolute;
+  top: 0.65rem;
+  left: 0.35rem;
+}
 .header {
   width: 100%;
   background-color: white;
@@ -665,7 +753,7 @@ export default {
   font-family: PingFang-SC-Medium;
   font-weight: 500;
   color: rgba(51, 51, 51, 1);
-  width: 8rem;
+  width: 7.5rem;
   display: block;
   margin: 0 auto;
   margin-top: 0.406667rem;

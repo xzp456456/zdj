@@ -1,12 +1,12 @@
 <template>
   <div class="shiyong">
     <div class="navBar">
-      <div class="nav active">未使用</div>
-      <div class="nav">已使用</div>
-      <div class="nav">已过期</div>
+      <div class="nav" :class="type==0?'active':''"  @click="changType(0)">未使用</div>
+      <div class="nav" :class="type==1?'active':''" @click="changType(1)">已使用</div>
+      <div class="nav" :class="type==2?'active':''" @click="changType(2)">已过期</div>
     </div>
     <div class="item">
-      <div class="list gc">
+      <div class="list gc" v-for="(item,index) in list" :key="index" >
         <div class="left money">￥1000</div>
         <div class="left all">
           <div class="name">新用户优惠券</div>
@@ -31,7 +31,35 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data(){
+    return{
+      list:[],
+      type:0
+    }
+  },
+  created(){
+    this.getList()
+  },
+  methods:{
+    changType(type){
+      this.type = type;
+      this.getList()
+    },
+    getList(){
+      let data = {
+        type:this.type,
+        page:this.page,
+        page_size:this.page_size,
+        trip_id:localStorage.getItem('trip_id')
+      }
+      this.$postAjax('/api/coupon/getList',data)
+      .then(res=>{
+        this.list = res.data;
+      })
+    }
+  }
+};
 </script>
 <style scoped="">
 .navBar {

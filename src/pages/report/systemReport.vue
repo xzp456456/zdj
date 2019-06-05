@@ -2,7 +2,7 @@
   <div>
     <div class="navgate">
       <div class="row">
-        <span class="left"><</span> 系统消息
+        <span class="left"><img class="de" src="@/assets/de.png" alt="" srcset=""></span> 系统消息
       </div>
     </div>
     <div class="title">【福利】XXXXXXXXXXXXXX!</div>
@@ -16,7 +16,7 @@
           </div>
         </div>
       </div>
-      <div class="list">
+      <!-- <div class="list">
         <div class="row">
           <div class="name">这是一条消息</div>
           <div class="desc">
@@ -24,8 +24,8 @@
             XXXXXXXXXXXXXXXXXXXXX
           </div>
         </div>
-      </div>
-      <div class="list">
+      </div> -->
+      <!-- <div class="list">
         <div class="row">
           <div class="name">这是一条消息</div>
           <div class="desc">
@@ -33,7 +33,7 @@
             XXXXXXXXXXXXXXXXXXXXX
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="more">没有更多了~</div>
   </div>
@@ -63,6 +63,10 @@ export default {
 };
 </script>
 <style scoped="">
+.de{
+  width: .24rem;
+  transform: rotate(180deg);
+}
 .navgate {
   width: 100%;
   height: 1.32rem;

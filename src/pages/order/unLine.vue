@@ -3,11 +3,11 @@
     <div class="row mag">
       <img class="moren left" src="@/assets/moren.png" alt srcset>
       <div class="left mlf">
-        <span class="name">胡师傅</span>
+        <span class="name">{{user.realname}}</span>
         <span class="pj">
-          <img class="xinxing" src="@/assets/xinxing.png" alt srcset>5.0
+          <img class="xinxing" src="@/assets/xinxing.png" alt srcset>{{user.driver_star}}
         </span>
-        <div class="lin">代驾1104次 驾龄5年</div>
+        <div class="lin">代驾{{user.drive_times}}次 驾龄{{user.driver_years}}年</div>
       </div>
     </div>
     <div class="bar">
@@ -19,26 +19,26 @@
       <div class="vlist">
         <div class="row">
           <span class="left colb">起步价</span>
-          <span class="right colb">20.3元</span>
+          <span class="right colb">{{info.start_trip_price}}元</span>
         </div>
       </div>
       <div class="vlist">
         <div class="row">
-          <span class="left">里程(8公里)</span>
-          <span class="right">20.3元</span>
+          <span class="left">里程({{info.beyond_start_mile}}公里)</span>
+          <span class="right">{{info.mile_trip_price}}元</span>
         </div>
       </div>
       <div class="vlist">
         <div class="row">
-          <span class="left">时长(19分钟)</span>
-          <span class="right">20.3元</span>
+          <span class="left">时长({{info.driver_wait_minute}}分钟)</span>
+          <span class="right">{{info.wait_trip_price}}元</span>
         </div>
       </div>
       <div class="vlist">
         <div class="row">
           <span class="left">优惠券抵扣</span>
           <span class="right yhj">
-            -15.0元
+            -{{info.use_coupon_amount}}元
             <img class="jt" src="@/assets/jt.png" alt rcset>
           </span>
         </div>
@@ -51,19 +51,51 @@
       <div class="border inback"></div>
       <div class="undel">请线下支付司机费用</div>
     </div>
+        <div class="lving" v-show="pay==1">
+      <div class="success">
+        <img class="success-img" src="@/assets/success.png" alt srcset>
+        <div class="suc">线下支付成功！</div>
+        <div class="day">给您的这次行程一个评价吧</div>
+        <div class="read" ><span @click="navgateTo('/')">下次再说</span><span @click="navgateTo('evaluate')">前往评价</span></div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import Button from "@/components/Button";
 export default {
-  components: {
-    "v-button": Button
+   data(){
+    return{
+      info:{},
+      user:{},
+      pay:0
+    }
+  },
+  created(){
+    this.getMoney()
+    this.getUserInfo()
   },
   methods:{
+    navgateTo(url){
+      this.$router.push(url)
+    },
     getUserInfo(){
-      
+      this.$postAjax('/api/user/getUserInfo',{obj_uid:localStorage.getItem('driver_uid')})
+      .then(res=>{
+        this.user = res.data;
+      })
+    },
+    getMoney(){
+      this.$postAjax('/api/trip/getTripFeeDetail',{trip_id:localStorage.getItem('trip_id')})
+      .then(res=>{
+        
+        this.info = res.data;
+      })
     }
+  },
+  components: {
+    "v-button": Button
   }
 };
 </script>
@@ -421,6 +453,73 @@ export default {
 
 .btn {
   margin-top: 0.2rem;
+}
+
+.read{
+    font-size:.373333rem;
+font-family:PingFang-SC-Medium;
+font-weight:500;
+color:rgba(72,203,183,1);
+height: 1.306667rem;
+width: 100%;
+line-height: 1.306667rem;
+text-align: center;
+border-top:1px solid  #dddddd;
+position: absolute;
+bottom: 0;
+}
+
+.read span{
+  width: 49%;
+  display: inline-block;
+  text-align: center;
+}
+
+.read span:first-child{
+  border-right:1px solid  #dddddd;
+}
+
+.suc {
+  text-align: center;
+  font-size: 0.373333rem;
+  font-family: PingFang-SC-Bold;
+  font-weight: bold;
+  color: rgba(51, 51, 51, 1);
+   padding-top: 0.2rem;
+ padding-bottom: 0.2rem;
+}
+
+.day {
+    padding-bottom: 0.5rem;
+    text-align: center;
+  font-size: 0.346667rem;
+  font-family: PingFang-SC-Regular;
+  font-weight: 400;
+  color: rgba(187, 187, 187, 1);
+}
+.lving {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.success {
+    position: relative;
+  margin: 0 auto;
+  padding-top: 0.5rem;
+  margin-top: 3rem;
+  width: 6.826667rem;
+  height: 4.06rem;
+  background: rgba(255, 255, 255, 1);
+  border-radius: 0.133333rem;
+}
+.success-img {
+  width: 0.88rem;
+  height: 0.88rem;
+  display: block;
+  margin: 0 auto;
 }
 </style>
 

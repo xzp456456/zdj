@@ -4,7 +4,7 @@
       <div class="title row">请选择取消原因，我们将努力改善</div>
     </div>
     <div class="item">
-      <div :class="index==activeIndex?'list active':'list'" v-for="(item,index) in reason" :key="index" @click="select(index,item.reason_id)">
+      <div :class="index==activeIndex?'list active':'list'" v-for="(item,index) in reason" :key="index" @click="select(index,item.reason_id,item.reason)">
         <div class="row">{{item.reason}}</div>
       </div>
     </div>
@@ -37,9 +37,10 @@ export default {
     this.getReason();
   },
   methods:{
-    select(index,reason_id){
+    select(index,reason_id,reason){
       this.activeIndex = index;
       this.reason_id = reason_id;
+      localStorage.setItem('reason',reason)
     },
     getReason(){
       this.$postAjax('/api/trip/getTripCancelReason',{type:2})
@@ -61,8 +62,9 @@ export default {
             duration:1000
           })
           localStorage.removeItem('kongkai_id');
+          
          setTimeout(()=>{
-            this.$router.push('cancelSure')
+            this.$router.replace('cancelSure')
          },1000)
           }else{
              this.Toast({

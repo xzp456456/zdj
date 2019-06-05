@@ -172,7 +172,7 @@ RongIMClient.reconnect(callback, config);
     send() {
       var that = this;
       var msg_mode = this.message;
-      var target_id = this.targetId;
+      var target_id = '1';
       var msg = new RongIMLib.TextMessage({ content:msg_mode, extra: '附加信息' });
 var conversationType = RongIMLib.ConversationType.PRIVATE; // 单聊, 其他会话选择相应的消息类型即可
 var targetId = target_id; // 目标 Id

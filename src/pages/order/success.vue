@@ -1,7 +1,6 @@
 <template>
   <div class="map">
     <div id="container"></div>
-    <div class="change" @click="navgateChange('address')">改变行程</div>
     <div class="bottom">
       <div class="row mag">
         <img class="moren left" :src="driver.avatar" alt srcset>
@@ -31,13 +30,18 @@ export default {
     return {
       wait: 0,
       driver: {},
-      map: ""
+      map: "",
+      getDevice:''
     };
+  },
+  destroyed(){
+    clearInterval(this.getDevice)
   },
   components: {
     "v-button": Button
   },
   mounted() {
+    
     var that = this;
     this.getLatLng().then(longs=>{
          var lng = longs.data.driver_longitude;
@@ -50,11 +54,20 @@ export default {
     });
     
     var marker_sj = new AMap.Marker({
-        icon: "http://zhangdj.yxsoft.net/assets/we.png",
+         icon:new AMap.Icon({            
+            image:"http://zhangdj.yxsoft.net/assets/we.png",
+            size:new AMap.Size(47, 61),  //图标大小
+            imageSize: new AMap.Size(47,61)
+        }), 
         offset: new AMap.Pixel(-10, -10),
         position: new AMap.LngLat(lng,lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
         title: "司机当前位置"
       });
+       marker_sj.setLabel({
+            offset: new AMap.Pixel(10, 0),  //设置文本标注偏移量
+            content: "<div class='info'>司机位置</div>", //设置文本标注内容
+            direction: 'top' //设置文本标注方位
+        });
       map.add(marker_sj);
     map.plugin("AMap.Geolocation", function() {
       var geolocation = new AMap.Geolocation({
@@ -76,11 +89,20 @@ export default {
 
       function onComplete(data) {
         var marker_my = new AMap.Marker({
-        icon: "http://zhangdj.yxsoft.net/assets/my.png",
-        offset: new AMap.Pixel(-10, -10),
+        icon:new AMap.Icon({            
+            image:"http://zhangdj.yxsoft.net/assets/my.png",
+            size:new AMap.Size(47, 61),  //图标大小
+            imageSize: new AMap.Size(47,61)
+        }), 
+        offset: new AMap.Pixel(-20, -40),
         position: new AMap.LngLat(data.position.lng, data.position.lat), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
         title: "我的位置"
       });
+        marker_my.setLabel({
+            offset: new AMap.Pixel(10, 0),  //设置文本标注偏移量
+            content: "<div class='info'>我的位置</div>", //设置文本标注内容
+            direction: 'top' //设置文本标注方位
+        });
         map.add(marker_my);
         var lnglat = new AMap.LngLat(data.position.lng,data.position.lat);
         marker_my.moveTo(lnglat,500,(k)=>{
@@ -92,7 +114,7 @@ export default {
         // 定位出错
       }
     });
-    setInterval(()=>{
+   that.getDevice = setInterval(()=>{
       this.getLatLng().then(res=>{
         var lnglat = new AMap.LngLat(res.data.driver_longitude,res.data.driver_latitude);
         marker_sj.moveTo(lnglat,500,(k)=>{
@@ -103,7 +125,139 @@ export default {
     },10000)
     
     })
+    var that = this;
+      RongIMLib.RongIMClient.init('25wehl3u2g0qw');
+        RongIMClient.setConnectionStatusListener({
+       onChanged: function (status) {
+           // status 标识当前连接状态
+           console.log(status);
+           switch (status) {
+               case RongIMLib.ConnectionStatus.CONNECTED:
+                   console.log('链接成功');
+                   break;
+               case RongIMLib.ConnectionStatus.CONNECTING:
+                   console.log('正在链接');
+                   break;
+               case RongIMLib.ConnectionStatus.DISCONNECTED:
+                   console.log('断开连接');
+                   break;
+               case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
+                   console.log('其他设备登录');
+                   break;
+               case RongIMLib.ConnectionStatus.DOMAIN_INCORRECT:
+                   console.log('域名不正确');
+                   break;
+               case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
+                   console.log('网络不可用');
+                   break;
+           }
+       }
+   });
+   RongIMClient.setOnReceiveMessageListener({
+       // 接收到的消息
+       onReceived: function (message) {
+           // 判断消息类型
+           console.log(message);
+           if(message.content.extra=='TripStart'){
+              that.Toast({
+             message: '司机接到乘客',
+            duration:1000
+          })
+          that.$router.replace('underway');
+           }
+          
+           switch(message.messageType){
+               case RongIMClient.MessageType.TextMessage:
+                   // message.content.content => 文字内容
+                   break;
+               case RongIMClient.MessageType.VoiceMessage:
+                   // message.content.content => 格式为 AMR 的音频 base64
+                   break;
+               case RongIMClient.MessageType.ImageMessage:
+                   // message.content.content => 图片缩略图 base64
+                   // message.content.imageUri => 原图 URL
+                   break;
+               case RongIMClient.MessageType.LocationMessage:
+                   // message.content.latiude => 纬度
+                   // message.content.longitude => 经度
+                   // message.content.content => 位置图片 base64
+                   break;
+               case RongIMClient.MessageType.RichContentMessage:
+                   // message.content.content => 文本消息内容
+                   // message.content.imageUri => 图片 base64
+                   // message.content.url => 原图 URL
+                   break;
+               case RongIMClient.MessageType.InformationNotificationMessage:
+                   // do something
+                   break;
+               case RongIMClient.MessageType.ContactNotificationMessage:
+                   // do something
+                   break;
+               case RongIMClient.MessageType.ProfileNotificationMessage:
+                   // do something
+                   break;
+               case RongIMClient.MessageType.CommandNotificationMessage:
+                   // do something
+                   break;
+               case RongIMClient.MessageType.CommandMessage:
+                   // do something
+                   break;
+               case RongIMClient.MessageType.UnknownMessage:
+                   // do something
+                   break;
+               default:
+                   // do something
+           }
+       }
+   });
+   var token = localStorage.getItem('im_token');
    
+   RongIMClient.connect(token, {
+       onSuccess: function(userId) {
+           console.log('Connect successfully. ' + userId);
+       },
+       onTokenIncorrect: function() {
+           //console.log('token 无效');
+       },
+       onError: function(errorCode){
+           var info = '';
+           switch (errorCode) {
+               case RongIMLib.ErrorCode.TIMEOUT:
+                   info = '超时';
+                   break;
+               case RongIMLib.ConnectionState.UNACCEPTABLE_PAROTOCOL_VERSION:
+                   info = '不可接受的协议版本';
+                   break;
+               case RongIMLib.ConnectionState.IDENTIFIER_REJECTED:
+                   info = 'appkey不正确';
+                   break;
+               case RongIMLib.ConnectionState.SERVER_UNAVAILABLE:
+                   info = '服务器不可用';
+                   break;
+           }
+           //console.log(info);
+       }
+   });
+   var callback = {
+       onSuccess: function(userId) {
+           console.log('Reconnect successfully. ' + userId);
+       },
+       onTokenIncorrect: function() {
+           console.log('token无效');
+       },
+       onError: function(errorCode){
+           console.log(errorcode);
+       }
+   };
+   var config = {
+       // 默认 false, true 启用自动重连，启用则为必选参数
+       auto: true,
+       // 网络嗅探地址 [http(s)://]cdn.ronghub.com/RongIMLib-2.2.6.min.js 可选
+       url: 'cdn.ronghub.com/RongIMLib-2.2.6.min.js',
+       // 重试频率 [100, 1000, 3000, 6000, 10000, 18000] 单位为毫秒，可选
+       rate: [100, 1000, 3000, 6000, 10000]
+   };
+   RongIMClient.reconnect(callback, config);
   },
   created() {
     this.getUserInfo();
@@ -121,7 +275,8 @@ export default {
     },
     setUserInfo() {
       localStorage.setItem("driver", this.driver.realname);
-      localStorage.setItem("uid", this.driver.uid);
+      var id = localStorage.getItem('driver_uid')
+      localStorage.setItem("targetId", id);
     },
     getUserInfo() {
       this.$postAjax("/api/user/getUserInfo", { obj_uid: 3 }).then(res => {

@@ -91,7 +91,7 @@ export default {
             duration: 1000
           });
           setTimeout(()=>{
-              this.$router.push('/')
+              this.$router.replace('/')
           },1000)
         } else {
           this.Toast({

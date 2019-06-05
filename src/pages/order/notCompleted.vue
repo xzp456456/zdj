@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="list">
-        <div class="row">
+        <div class="row clear">
           <span class="left wen wen1"><img class="dz" src="@/assets/dz.png" />出发地：{{item.origin_name}}</span>
           <span class="right mun">
             <!-- 17张 -->
@@ -29,13 +29,13 @@
       <div class="mar"></div>
       </div>
     </div>
-    <div class="title">
+    <div class="title" style="border-bottom:none;">
       <div class="row">已完成订单</div>
     </div>
-     <div class="all" v-for="(item,index) in list" :key="'k'+index" >
+     <div class="all" v-for="(item,index) in list" :key="'k'+index"  >
        <div v-if="item.is_finish==1">
      <div class="list">
-        <div class="row">
+        <div class="row clear">
           <span class="left time">{{item.create_time}}</span>
           <span class="right ing">{{item.status_desc}}</span>
         </div>
@@ -136,6 +136,10 @@ height:.346667rem;
 margin-right: .133333rem;
 position: relative;
 top: 0.04rem;
+}
+
+.clear{
+  clear: both;
 }
 .mar{
   width: 100%;

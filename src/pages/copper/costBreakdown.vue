@@ -1,46 +1,62 @@
 <template>
   <div>
     <div class="copper">费用明细</div>
-    <div class="time">2019-02-02 10:00</div>
+    <div class="time">{{info.on_time}}</div>
     <border-text></border-text>
     <div class="list">
       <div class="row">
         <span class="left">起步价</span>
-        <span class="right">18.0元</span>
+        <span class="right">{{info.start_trip_price}}元</span>
       </div>
     </div>
     <div class="list">
       <div class="row">
         <span class="left">里程(超起步8公里)</span>
-        <span class="right">20.0元</span>
+        <span class="right">{{info.mile_trip_price}}元</span>
       </div>
     </div>
     <div class="list">
       <div class="row">
-        <span class="left">等待费(19分钟)</span>
-        <span class="right">18.0元</span>
+        <span class="left">等待费({{info.driver_wait_minute}}分钟)</span>
+        <span class="right">{{info.wait_trip_price}}元</span>
       </div>
     </div>
      <div class="list">
       <div class="row">
         <span class="left">长途费</span>
-        <span class="right">X1.1</span>
+        <span class="right">{{info.beyond_trip_price}}</span>
       </div>
     </div>
      <div class="list">
       <div class="row">
         <span class="left">动态加价</span>
-        <span class="right">X1.1</span>
+        <span class="right">{{info.add_trip_price}}</span>
       </div>
     </div>
     <div class="border"></div>
-    <div class="row total">总价 35.09 元</div>
+    <div class="row total">总价 {{info.pay_price}} 元</div>
     <div class="row money">*车费计算四舍五入小数点后两位</div>
   </div>
 </template>
 <script>
 import borderText from "@/components/borderText";
 export default {
+  data(){
+    return{
+      info:{}
+    }
+  },
+  created(){
+    this.getInfo()
+  },
+  methods:{
+    getInfo(){
+      this.$postAjax('/api/trip/getTripFeeDetail',{trip_id:localStorage.getItem('trip_id')})
+      .then(res=>{
+        this.info = res.data;
+      })
+    }
+  },
   components: { "border-text": borderText }
 };
 </script>

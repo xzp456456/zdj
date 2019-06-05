@@ -310,7 +310,7 @@ export default new Router({
       }
     },
     {
-      path:'/problem',
+      path: '/problem',
       name: 'problem',
       component: resolve => require(['@/pages/server/problem'], resolve),
       meta: {
@@ -318,7 +318,7 @@ export default new Router({
       }
     },
     {
-      path:'/share',
+      path: '/share',
       name: 'share',
       component: resolve => require(['@/pages/server/share'], resolve),
       meta: {
@@ -326,7 +326,7 @@ export default new Router({
       }
     },
     {
-      path:'/setup',
+      path: '/setup',
       name: 'setup',
       component: resolve => require(['@/pages/Home/setup'], resolve),
       meta: {
@@ -334,7 +334,7 @@ export default new Router({
       }
     },
     {
-      path:'/accountSecurity',
+      path: '/accountSecurity',
       name: 'accountSecurity',
       component: resolve => require(['@/pages/server/accountSecurity'], resolve),
       meta: {
@@ -342,7 +342,7 @@ export default new Router({
       }
     },
     {
-      path:'/changePhone',
+      path: '/changePhone',
       name: 'changePhone',
       component: resolve => require(['@/pages/Account/changePhone'], resolve),
       meta: {
@@ -350,7 +350,7 @@ export default new Router({
       }
     },
     {
-      path:'/newPhone',
+      path: '/newPhone',
       name: 'newPhone',
       component: resolve => require(['@/pages/Account/newPhone'], resolve),
       meta: {
@@ -358,7 +358,7 @@ export default new Router({
       }
     },
     {
-      path:'/changePassword',
+      path: '/changePassword',
       name: 'changePassword',
       component: resolve => require(['@/pages/Account/changePassword'], resolve),
       meta: {
@@ -366,7 +366,7 @@ export default new Router({
       }
     },
     {
-      path:'/findPassword',
+      path: '/findPassword',
       name: 'findPassword',
       component: resolve => require(['@/pages/Account/findPassword'], resolve),
       meta: {
@@ -374,7 +374,7 @@ export default new Router({
       }
     },
     {
-      path:'/wx',
+      path: '/wx',
       name: 'wx',
       component: resolve => require(['@/pages/Account/wx'], resolve),
       meta: {
@@ -382,7 +382,7 @@ export default new Router({
       }
     },
     {
-      path:'/cancelAccount',
+      path: '/cancelAccount',
       name: 'cancelAccount',
       component: resolve => require(['@/pages/Account/cancelAccount'], resolve),
       meta: {
@@ -390,7 +390,7 @@ export default new Router({
       }
     },
     {
-      path:'/rule',
+      path: '/rule',
       name: 'rule',
       component: resolve => require(['@/pages/Account/rule'], resolve),
       meta: {
@@ -398,29 +398,85 @@ export default new Router({
       }
     },
     {
-      path:'/serverUser',
-      name:'serverUser',
+      path: '/serverUser',
+      name: 'serverUser',
       component: resolve => require(['@/pages/server/serverUser'], resolve),
       meta: {
         title: "张代驾"
       }
     },
     {
-      path:'/demo',
-      name:'demo',
+      path: '/demo',
+      name: 'demo',
       component: resolve => require(['@/pages/server/demo'], resolve),
       meta: {
         title: "张代驾"
       }
     },
     {
-      path:'/evaluate',
-      name:'evaluate',
+      path: '/evaluate',
+      name: 'evaluate',
       component: resolve => require(['@/pages/order/evaluate'], resolve),
       meta: {
         title: "张代驾"
       }
+    },
+    {
+      path: '/changeway',
+      name: 'changeway',
+      component: resolve => require(['@/pages/Home/changeway'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: resolve => require(['@/pages/Account/about'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/cancelRule',
+      name: 'cancelRule',
+      component: resolve => require(['@/pages/Home/cancelRule'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/code',
+      name: 'code',
+      component: resolve => require(['@/pages/server/code'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path: '/load',
+      name: 'load',
+      component: resolve => require(['@/pages/server/load'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/erweima',
+      name: 'erweima',
+      component: resolve => require(['@/pages/server/erweima'], resolve),
+      meta: {
+        title: "张代驾"
+      }
+    },
+    {
+      path:'/agree',
+      name: 'agree',
+      component: resolve => require(['@/pages/report/agree'], resolve),
+      meta: {
+        title: "张代驾"
+      }
     }
-    
+
   ]
 })

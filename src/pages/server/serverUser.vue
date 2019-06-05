@@ -5,25 +5,29 @@
       <!-- <div class="time">2019-09-21 14:00</div> -->
     </div>
     <div class="item">
-      <div class="list" v-for="(item,index) in  success_message" :key="index">
+      <div class="list" v-for="(item,index) in success_message" :key="index">
         <div class="row" v-if="item.id==2">
           <img class="header left" src="@/assets/header.png" alt srcset>
-          <div class="desc left">{{item.content}}</div>
+          <div class="desc left" v-html="item.content"></div>
         </div>
         <div class="row" v-else>
           <img class="header right" :src="avatar" alt srcset>
-          <div class="desc right text-right">{{item.content}}</div>
+          <div class="desc right text-right" v-html="item.content"></div>
         </div>
       </div>
     </div>
-    <div class="biaoqing" style="display:none">
-      <div class="view left" v-for="(item,index) in list" :key="index">{{item.emoji}}</div>
+    <div class="biaoqing" v-show="biaoqing==1">
+      <div class="view left" v-for="(item,index) in list" :key="index"><span v-html="item.node.outerHTML" @click="select($event)"></span></div>
     </div>
     <div class="call">
-        <div class="dom"></div>
+        <!-- <div class="dom"></div> -->
       <div class="mg">
-        <input type="text" placeholder="输入" v-model="message" class="content">
-        <img class="bc" src="@/assets/bc.png" alt srcset>
+       
+        <div type="text" placeholder="输入"  class="content" ref="text" contenteditable='true' @input="addMessage($event)" v-html="message" >
+          
+        </div>
+        
+        <img class="bc" src="@/assets/bc.png" @click="show()" alt srcset>
         <button class="send" @click="send()">发送</button>
       </div>
     </div>
@@ -34,6 +38,7 @@ import { sendMessage, RyMI, callHistory } from "@/util/public";
 export default {
   data() {
     return {
+      biaoqing:0,
       message: "",
       success_message: [],
       targetId: "1",
@@ -45,6 +50,7 @@ export default {
   created() {
     this.avatar = localStorage.getItem("header_img");
     this.driver.name = localStorage.getItem("driver");
+      
   },
   mounted() {
     var that = this;
@@ -55,7 +61,7 @@ export default {
         //console.log(status);
         switch (status) {
           case RongIMLib.ConnectionStatus.CONNECTED:
-            //console.log('链接成功');
+            console.log('链接成功');
             break;
           case RongIMLib.ConnectionStatus.CONNECTING:
             //console.log('正在链接');
@@ -129,10 +135,10 @@ export default {
 
     RongIMClient.connect(token, {
       onSuccess: function(userId) {
-        //console.log('Connect successfully. ' + userId);
+        console.log('Connect successfully. ' + userId);
       },
       onTokenIncorrect: function() {
-        //console.log('token 无效');
+        console.log('token 无效');
       },
       onError: function(errorCode) {
         var info = "";
@@ -155,13 +161,13 @@ export default {
     });
     var callback = {
       onSuccess: function(userId) {
-        //console.log('Reconnect successfully. ' + userId);
+        console.log('Reconnect successfully. ' + userId);
       },
       onTokenIncorrect: function() {
-        //console.log('token无效');
+        console.log('token无效');
       },
       onError: function(errorCode) {
-        //console.log(errorcode);
+        console.log(errorcode);
       }
     };
     var config = {
@@ -192,19 +198,57 @@ export default {
     };
     RongIMLib.RongIMEmoji.init(config);
     var list = RongIMLib.RongIMEmoji.list;
+    //console.log(list);
+    
     this.list = list;
   },
   methods: {
+    addMessage(e){
+      this.message = e.target.innerHTML;
+      this.keepLastIndex(this.$refs.text)
+    },
+    show(){
+      if(this.biaoqing == 1){
+        this.biaoqing = 0
+      }else{
+        this.biaoqing = 1
+      }
+    },
+  keepLastIndex(obj) {
+    if (window.getSelection) {//ie11 10 9 ff safari
+        obj.focus(); //解决ff不获取焦点无法定位问题
+        var range = window.getSelection();//创建range
+        range.selectAllChildren(obj);//range 选择obj下所有子内容
+        range.collapseToEnd();//光标移至最后
+    }
+    else if (document.selection) {//ie10 9 8 7 6 5
+        var range = document.selection.createRange();//创建选择对象
+        //var range = document.body.createTextRange();
+        range.moveToElementText(obj);//range定位到obj
+        range.collapse(false);//光标移至最后
+        range.select();
+    }
+},
+
+    select(e){
+      console.log(e.currentTarget.children[0].attributes['name'].nodeValue)
+      var name = e.currentTarget.children[0].attributes['name'].nodeValue;
+     this.message = this.message+RongIMLib.RongIMEmoji.symbolToHTML(name);
+     
+    },
     send() {
       var that = this;
       var msg_mode = this.message;
-      var target_id = this.targetId;
-      var msg = new RongIMLib.TextMessage({
+  // var target_id =localStorage.getItem("driver_uid");
+      var msg = new RongIMLib.RichContentMessage({
         content: msg_mode,
         extra: "附加信息"
       });
       var conversationType = RongIMLib.ConversationType.PRIVATE; // 单聊, 其他会话选择相应的消息类型即可
-      var targetId = localStorage.getItem("driver_uid"); // 目标 Id
+     
+        var targetId =localStorage.getItem('targetId');
+      
+       // 目标 Id
       RongIMClient.getInstance().sendMessage(conversationType, targetId, msg, {
         onSuccess: function(message) {
           // message 为发送的消息对象并且包含服务器返回的消息唯一 Id 和发送消息时间戳
@@ -257,6 +301,32 @@ export default {
           });
         }
       });
+    },
+     insertHtmlAtCaret(str) {
+        var sel, range;
+        if(window.getSelection){
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.deleteContents();
+                var el = document.createElement("div");
+                el.innerHTML = str;
+                var frag = document.createDocumentFragment(), node, lastNode;
+                while ( (node = el.firstChild) ) {
+                    lastNode = frag.appendChild(node);
+                }
+                    range.insertNode(frag);
+                if(lastNode){
+                    range = range.cloneRange();
+                    range.setStartAfter(lastNode);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+        } else if (document.selection && document.selection.type != "Control") {
+            document.selection.createRange().pasteHTML(str);
+        }
     }
   }
 };
@@ -271,10 +341,14 @@ export default {
 }
 .biaoqing {
   width: 9rem;
-  height: 3rem;
+  height: 3.2rem;
   position: fixed;
   bottom: 1.5rem;
-  border: 1px solid black;
+  left: 0.2rem;
+  overflow-y: scroll;
+  border: 1px solid #dddddd;
+  padding: .066667rem;
+  
 }
 .header {
   width: 1.2rem;
@@ -350,10 +424,12 @@ export default {
 .content {
   width: 6.453333rem;
   height: 0.8rem;
+  line-height: 0.8rem;
   background: rgba(255, 255, 255, 1);
   border: 2px solid rgba(221, 221, 221, 0.4);
   border-radius: 0.133333rem;
   padding-left: 0.4rem;
+  float: left;
 }
 
 .send {

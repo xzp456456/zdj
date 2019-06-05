@@ -92,9 +92,10 @@ export default {
     console.log(this.$refs)
   },
   methods:{
-    navgateTo(url,id){
+    navgateTo(url){
+      var id = localStorage.getItem('im_service_id');
+      localStorage.setItem('targetId',id)
       this.$router.push(url);
-      localStorage.setItem('trip_id_ts',id)
     },
     getOrder(){
       let data = {

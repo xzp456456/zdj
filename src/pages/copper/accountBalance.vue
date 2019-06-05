@@ -18,7 +18,7 @@
             <div class="text textview">{{item.fina_action_desc}}</div>
             <div class="time">{{item.on_time}}</div>
           </div>
-          <div class="right add">{{item.fina_type=='in'?'+':'-'}}{{item.fina_cash}}元</div>
+          <div class="right add">{{item.fina_cash}}元</div>
         </div>
       </div>
        <!-- <div class="list">

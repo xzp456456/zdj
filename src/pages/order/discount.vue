@@ -1,11 +1,11 @@
 <template>
-    <div class="shiyong">
-        <div class="row">
+    <div class="shiyong" >
+        <div class="row" @click="navgateTo('order')">
         <span class="left">不使用优惠券</span>
         <span class="right"><img class="xuanze" src="@/assets/xuanze.png" alt="" srcset=""></span>
         </div>
-        <div class="item">
-            <div class="list" v-for="(item,index) in list" :key="index">
+        <div class="item" >
+            <div class="list" v-for="(item,index) in list" :key="index" @click="select(item.coupon_id,item.discount)">
                 <div class="left money">￥{{item.discount}}</div>
                 <div class="left all">
                     <div class="name">{{item.name}}</div>
@@ -43,6 +43,14 @@ export default {
         this.getDiscount();
     },
     methods:{
+        navgateTo(url){
+            this.$router.push(url)
+        },
+        select(id,money){
+            localStorage.setItem('coupon_id',id);
+            localStorage.setItem('zk',money);
+            this.navgateTo('order');
+        },
         getDiscount(){
             let data = {type:this.type,page:this.page,page_size:this.page_size}
             this.$postAjax('/api/coupon/getList',data)

@@ -8,7 +8,7 @@
         </span>
       </div>
     </div>
-    <div class="list">
+    <div class="list" @click="navgateTo('about')">
       <div class="row">
         <span>关于我们</span>
         <span class="right">

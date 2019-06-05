@@ -42,19 +42,19 @@
         </div>
       </div>
       <div class="bar">
-        <div class="border inback"></div>
+        <div class="border inback" style="width: 3.906667rem;"></div>
         <div class="text inback">给司机打分</div>
-        <div class="border inback"></div>
+        <div class="border inback"  style="width: 3.906667rem;"></div>
       </div>
     </div>
     <div class="xinlist">
-      <img class="xin" src="@/assets/xinxing.png" alt>
-      <img class="xin" src="@/assets/xinxing.png" alt>
-      <img class="xin" src="@/assets/xinxing.png" alt>
-      <img class="xin" src="@/assets/xinxing.png" alt>
-      <img class="xin" src="@/assets/xinxing.png" alt>
+      <img class="xin" v-for="(item,index) in driver_is_evaluate" :key="index" :src="item==1?require('@/assets/xinxin-active.png'):require('@/assets/xinxin.png')" alt>
+      <!-- <img class="xin" src="@/assets/xinxin-active.png" alt>
+      <img class="xin" src="@/assets/xinxin.png" alt>
+      <img class="xin" src="@/assets/xinxin.png" alt>
+      <img class="xin" src="@/assets/xinxin.png" alt> -->
     </div>
-    <div class="desc">人很无敌</div>
+    <div class="desc">{{info.driver_evaluate_content}}</div>
   </div>
 </template>
 
@@ -65,7 +65,8 @@ export default {
     return{
       info:{},
       current_price:'',
-      item:{}
+      item:{},
+      driver_is_evaluate:[]
     }
   },
   created(){
@@ -83,11 +84,17 @@ export default {
         //console.log(res);
         this.info = res.data;
         this.uid = res.data.uid;
+        var driver_is_evaluate = res.data.driver_is_evaluate;
+        var item = [0,0,0,0,0];
+        for(var i=0;i<driver_is_evaluate,i++;){
+          item[i]=1;
+        }
+        this.driver_is_evaluate = item;
         this.getUserInfo();
       })
     },
     getUserInfo(){
-      let data = {obj_uid:this.uid}
+      let data = {obj_uid:localStorage.getItem('driver_uid')}
       this.$postAjax('/api/user/getUserInfo',data)
       .then(res=>{
         ////console.log(res);
@@ -236,7 +243,7 @@ export default {
 }
 
 .border {
-  width: 4.026667rem;
+  
   height: 1px;
   background: rgba(221, 221, 221, 1);
   opacity: 0.4;

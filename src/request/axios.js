@@ -14,9 +14,10 @@ var GetDomainName = function () {//获取域名后缀
 };
 
 if(GetDomainName()==".com"){
-    axios.defaults.baseURL = 'http://www.myyunmima.com'
+    axios.defaults.baseURL = 'http://www.zhangdaijia.com';
+}else if (GetDomainName()==".net"){
+    axios.defaults.baseURL = 'http://zhangdj.yxsoft.net'
 }else{
-   // axios.defaults.baseURL = 'http://zhangdj.yxsoft.net'
     axios.defaults.baseURL = '/api'
 }
 
@@ -93,9 +94,8 @@ export const getAjax = (url, param) => {
         axios.get(url, {params:param},
             {
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
                     'device-os':'wap',
-                    'access-token':localStorage.getItem('token')
+                    'access-token':localStorage.getItem('access_token')
                 }
             }).then((res) => {
                

@@ -8,12 +8,12 @@
     </div>
     <div class="item">
       <ul>
-        <li :class="select_id==0?'active':''" @click="select(0,100)">￥100</li>
-        <li :class="select_id==1?'active':''" @click="select(1,200)">￥200</li>
+        <li :class="select_id==index?'active':''" @click="select(index,item.amount)" v-for="(item,index) in list" :key="index">{{item.desc}}</li>
+        <!-- <li :class="select_id==1?'active':''" @click="select(1,200)">￥200</li>
         <li :class="select_id==2?'active':''" @click="select(2,300)">￥300</li>
         <li :class="select_id==3?'active':''" @click="select(3,500)">￥500</li>
         <li :class="select_id==4?'active':''" @click="select(4,1000)">￥1000</li>
-        <li :class="select_id==5?'active':''" @click="select(5,3000)">￥2000</li>
+        <li :class="select_id==5?'active':''" @click="select(5,3000)">￥2000</li> -->
       </ul>
     </div>
 
@@ -55,7 +55,8 @@ export default {
       amount:'100',
       wxId:0,
       select_id:0,
-      info:{}
+      info:{},
+      list:[]
     }
   },
   components: {
@@ -63,8 +64,16 @@ export default {
   },
   created(){
     this.getUserInfo()
+    this. getRechargeList()
   },
   methods:{
+    getRechargeList(){
+      this.$postAjax('/api/pay/getRechargeList',{})
+      .then(res=>{
+        this.amount = res.data.list[0].amount;
+        this.list = res.data.list;
+      })
+    },
     showWx(id){
       if(this.amount==''){
         this.Toast({

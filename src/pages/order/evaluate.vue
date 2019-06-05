@@ -3,7 +3,7 @@
     <div class="row mag">
       <img class="moren left" src="@/assets/moren.png" alt srcset>
       <div class="left mlf">
-        <span class="name">{{item.alipay_username}}</span>
+        <span class="name">{{item.realname}}</span>
         <span class="pj">
           <img class="xinxing" src="@/assets/xinxing.png" alt srcset>{{item.driver_star}}
         </span>
@@ -71,6 +71,7 @@ export default {
     },
     getEvaluate() {
       let data = {
+        trip_id:localStorage.getItem('trip_id'),
         evaluate_star: this.evaluate_star_index,
         evaluate_content: this.evaluate_content
       };
@@ -80,6 +81,9 @@ export default {
             message: res.msg,
             duration: 1000
           });
+          setTimeout(()=>{
+            this.$router.replace('/')
+          },1000)
         } else {
           this.Toast({
             message: res.msg,
@@ -99,7 +103,7 @@ export default {
       })
     },
     getUserInfo(){
-      let data = {obj_uid:this.uid}
+      let data = {obj_uid:localStorage.getItem('driver_uid')}
       this.$postAjax('/api/user/getUserInfo',data)
       .then(res=>{
         //console.log(res);

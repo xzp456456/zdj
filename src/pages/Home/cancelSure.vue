@@ -3,7 +3,7 @@
     <div class="header">
       <div class="row">
       <span class="left"><img class="back" @click="navgateTo('/')" src="@/assets/de.png" alt="" srcset=""></span>
-      <span class="right" @click="navgateTo('serverUser')">在线客服</span>
+      <span class="right" @click="setTallId()">在线客服</span>
       </div>
     </div>
     <div id="container"></div>
@@ -18,7 +18,7 @@
       </div>
       <div class="textCenter">
         <div class="text">行程已取消</div>
-        <div class="kh">02月27日 14:07 客户主动取消</div>
+        <div class="kh">{{Time}} {{text}}</div>
         <div class="qx" @click="navgateTo('rule')">
           <img class="gth" src="@/assets/gth.png" alt srcset>
           取消规则
@@ -34,13 +34,24 @@ export default {
     return {
       wait: 0,
       reason:{},
-      device:{}
+      device:{},
+      text:''
     };
   },
   components: {
     "v-button": Button
   },
   created(){
+    var date = new Date();
+    var year = date.getFullYear();
+
+var month = date.getMonth()+1;
+var day = date.getDate();
+var hour = date.getHours();
+var minute = date.getMinutes();
+var second = date.getSeconds();
+this.Time = year+'年'+month+'月'+day+'日 '+hour+':'+minute+':'+second
+    this.text = localStorage.getItem('reason')
     this.getReason();
     this.getUserInfo();
   },
@@ -49,7 +60,7 @@ export default {
   },
   methods: {
     getUserInfo(){
-      this.$postAjax('/api/user/getUserInfo',{obj_uid:localStorage.getItem('uid')})
+      this.$postAjax('/api/user/getUserInfo',{obj_uid:localStorage.getItem('driver_uid')})
       .then(res=>{
         console.log(res)
         this.device = res.data;
@@ -58,7 +69,10 @@ export default {
     },
     setTallId(){
       var id = localStorage.getItem('im_service_id');
-      localStorage.setItem('tall_id',id)
+      localStorage.setItem('targetId',id);
+      localStorage.setItem("driver", '在线客服');
+      this.$router.push('serverUser');
+
     },
     navgateTo(url) {
       this.$router.push(url);

@@ -20,7 +20,7 @@
 <div v-show="infoId==1">
   <div class="item" v-for="(item,index) in userList" :key="index" >
       <div class="row">
-        <div class="list" >
+        <div class="list">
           <div class="left pd"><img class="header left" src="@/assets/header.png" alt="" srcset="">
           <div class="left">
           <div class="title">{{item.targetId}}</div>
@@ -52,7 +52,6 @@ export default {
   },
   created(){
     this.getReport();
-    this.getUserList();
   },
   methods:{
     change(id){
@@ -64,11 +63,6 @@ export default {
         .then(res=>{
           //console.log(res)
             this.list = res.data.list
-        })
-      },
-      getUserList(){
-        RyMI().then(res=>{
-          this.userList = res;
         })
       }
   }

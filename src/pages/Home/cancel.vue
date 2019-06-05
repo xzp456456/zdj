@@ -18,7 +18,7 @@ import Button from "@/components/Button";
 export default {
   methods:{
     navgateTo(url){
-      this.$router.push(url)
+      this.$router.replace(url)
     }
   },
   components: {
